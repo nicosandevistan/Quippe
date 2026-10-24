@@ -129,23 +129,23 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
 - [x] 9. Checkpoint - deterministic core complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Build the data layer: repository and seed
-  - [ ] 10.1 Implement the in-memory repository in `src/lib/data/repo.ts`
+- [x] 10. Build the data layer: repository and seed
+  - [x] 10.1 Implement the in-memory repository in `src/lib/data/repo.ts`
     - Implement the `Repo` interface with `Promise`-typed synchronous in-memory methods: accounts/auth, organization + timeline read/add, companies/offers/ERGs CRUD, asks read/save/status, inventory read/save, and `getCityCoords`; `listInventory` applies the expired-item filter on every read using the passed `now`
     - Load and freeze the store from `seed.json` at startup, validating against the schemas
     - _Requirements: 1.1, 2.1, 2.2, 2.6, 4.1, 4.3, 5.1, 6.4, 7.1, 7.3, 13.5, 14.4, 15.6_
 
-  - [ ] 10.2 Author `src/lib/data/seed.json` with fictional data only
+  - [x] 10.2 Author `src/lib/data/seed.json` with fictional data only
     - 3 fictional companies (Boston, Cambridge, Worcester), each with one liaison, 1–2 ERGs, 3–4 offers, and 12–20 inventory items including ≥3 hazardous (e.g. ethidium bromide, unpolymerized acrylamide, phenol-chloroform) and 2 expired items
     - 4 fictional organizations: a college affinity STEM club (with ~6 past timeline events), a high school biology club with an advisor, a synthetic biology student team, and a small undergraduate lab
     - A Massachusetts city-coordinates table (~15 cities) and exactly one seeded demo account per role; all companies, people, and schools fictional with no real names or logos
     - _Requirements: 1.1, 2.2, 7.1, 11.1, 14.4, 17.6, 17.7_
 
-  - [ ] 10.3 Implement the `seed:check` validator script
+  - [x] 10.3 Implement the `seed:check` validator script
     - Validate `seed.json` against the zod schemas and fail with per-field errors; wire it to `npm run seed:check`
     - _Requirements: 19.3_
 
-  - [ ]* 10.4 Write unit tests for the repo and seed
+  - [x]* 10.4 Write unit tests for the repo and seed
     - Not-found org returns null; `listInventory` never returns expired items; `seed.json` parses and contains the required fictional fixtures (≥3 hazardous, 2 expired, ~6 college-club events, one account per role)
     - _Requirements: 2.6, 14.4, 17.6_
 

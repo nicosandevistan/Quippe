@@ -1,0 +1,585 @@
+{
+  "accounts": [
+    { "id": "acc-officer", "role": "club_officer", "orgId": "org-liss" },
+    { "id": "acc-advisor", "role": "club_advisor", "orgId": "org-hsbio" },
+    { "id": "acc-member", "role": "club_member", "orgId": "org-liss" },
+    { "id": "acc-liaison", "role": "company_liaison", "companyId": "co-harborview" },
+    { "id": "acc-erglead", "role": "erg_lead", "companyId": "co-harborview", "ergId": "erg-harborview-latino" }
+  ],
+
+  "organizations": [
+    {
+      "id": "org-liss",
+      "type": "college_club",
+      "name": "Latinos in STEM Society",
+      "school": "Commonwealth State University",
+      "city": "Boston",
+      "size": 25,
+      "mission": "A first-generation college affinity club supporting Latino students in science and engineering through hands-on workshops, industry mentorship, and lab experience.",
+      "underResourced": true,
+      "ageYears": 3
+    },
+    {
+      "id": "org-hsbio",
+      "type": "high_school_club",
+      "name": "Northgate High Biology Club",
+      "school": "Northgate High School",
+      "city": "Worcester",
+      "size": 18,
+      "mission": "A high school biology club exploring genetics, microbiology, and environmental science through after-school experiments and guest speakers.",
+      "underResourced": true,
+      "ageYears": 2,
+      "advisorAccountId": "acc-advisor"
+    },
+    {
+      "id": "org-synbio",
+      "type": "college_club",
+      "name": "Synthetic Biology Student Team",
+      "school": "Riverside Institute of Technology",
+      "city": "Cambridge",
+      "size": 12,
+      "mission": "An undergraduate synthetic biology competition team designing engineered bacterial systems and running weekly bench sessions.",
+      "underResourced": false,
+      "ageYears": 4
+    },
+    {
+      "id": "org-undergradlab",
+      "type": "undergrad_lab",
+      "name": "Coastal Ecology Undergraduate Lab",
+      "school": "Bayshore College",
+      "city": "Lowell",
+      "size": 6,
+      "mission": "A small undergraduate research lab studying coastal water quality and microplastics in Massachusetts estuaries.",
+      "underResourced": false,
+      "ageYears": 5
+    }
+  ],
+
+  "companies": [
+    { "id": "co-harborview", "name": "Harborview Therapeutics", "city": "Boston", "liaisonAccountId": "acc-liaison" },
+    { "id": "co-tidepool", "name": "Tidepool Biosciences", "city": "Cambridge", "liaisonAccountId": "acc-liaison-tidepool" },
+    { "id": "co-granite", "name": "Granite State Diagnostics", "city": "Worcester", "liaisonAccountId": "acc-liaison-granite" }
+  ],
+
+  "ergs": [
+    {
+      "id": "erg-harborview-latino",
+      "companyId": "co-harborview",
+      "leadAccountId": "acc-erglead",
+      "name": "Latino Professionals Network",
+      "description": "An employee resource group of Latino scientists and staff at Harborview who mentor first-generation students and host career conversations about industry science paths.",
+      "topics": ["mentorship", "first-generation", "career panels", "biotech careers"],
+      "capacityPerSemester": 60
+    },
+    {
+      "id": "erg-harborview-women",
+      "companyId": "co-harborview",
+      "leadAccountId": "acc-erglead-women",
+      "name": "Women in Science Alliance",
+      "description": "An employee resource group supporting women in laboratory and research roles through outreach events and student meetups.",
+      "topics": ["women in science", "outreach", "lab careers"],
+      "capacityPerSemester": 40
+    },
+    {
+      "id": "erg-tidepool-firstgen",
+      "companyId": "co-tidepool",
+      "leadAccountId": "acc-erglead-tidepool",
+      "name": "First Generation Scientists Group",
+      "description": "A Tidepool employee group of first-in-family college graduates who run demystifying-industry sessions for student clubs.",
+      "topics": ["first-generation", "industry access", "mentorship"],
+      "capacityPerSemester": 30
+    }
+  ],
+
+  "offers": [
+    {
+      "id": "off-hv-supplies",
+      "companyId": "co-harborview",
+      "type": "supplies",
+      "capacity": 30,
+      "availableDates": ["2027-01-15", "2027-02-01"],
+      "deliveryMode": "in_person",
+      "city": "Boston",
+      "notes": "Surplus molecular biology consumables available for pickup from our Boston site."
+    },
+    {
+      "id": "off-hv-tour",
+      "companyId": "co-harborview",
+      "type": "lab_tour",
+      "capacity": 20,
+      "availableDates": ["2027-02-10", "2027-03-05"],
+      "deliveryMode": "in_person",
+      "city": "Boston",
+      "minAge": 14,
+      "notes": "Guided tour of our research floor with a short Q&A with bench scientists."
+    },
+    {
+      "id": "off-hv-erg",
+      "companyId": "co-harborview",
+      "ergId": "erg-harborview-latino",
+      "type": "erg_event",
+      "capacity": 25,
+      "availableDates": ["2027-02-20"],
+      "deliveryMode": "in_person",
+      "city": "Boston",
+      "notes": "A meetup with our Latino Professionals Network: career conversations and mentorship for student groups."
+    },
+    {
+      "id": "off-hv-speaker",
+      "companyId": "co-harborview",
+      "type": "speaker",
+      "capacity": 50,
+      "availableDates": ["2027-01-28"],
+      "deliveryMode": "virtual",
+      "city": "Boston",
+      "notes": "A virtual talk on careers in therapeutics research."
+    },
+    {
+      "id": "off-tp-supplies",
+      "companyId": "co-tidepool",
+      "type": "supplies",
+      "capacity": 20,
+      "availableDates": ["2027-01-20"],
+      "deliveryMode": "in_person",
+      "city": "Cambridge",
+      "notes": "Surplus electrophoresis and PCR consumables from a lab consolidation."
+    },
+    {
+      "id": "off-tp-tour",
+      "companyId": "co-tidepool",
+      "type": "lab_tour",
+      "capacity": 15,
+      "availableDates": ["2027-03-12"],
+      "deliveryMode": "in_person",
+      "city": "Cambridge",
+      "minAge": 16,
+      "notes": "Tour of our sequencing facility."
+    },
+    {
+      "id": "off-tp-erg",
+      "companyId": "co-tidepool",
+      "ergId": "erg-tidepool-firstgen",
+      "type": "erg_event",
+      "capacity": 20,
+      "availableDates": ["2027-02-25"],
+      "deliveryMode": "virtual",
+      "city": "Cambridge",
+      "notes": "A virtual First Generation Scientists Group session on breaking into industry."
+    },
+    {
+      "id": "off-gr-supplies",
+      "companyId": "co-granite",
+      "type": "supplies",
+      "capacity": 25,
+      "availableDates": ["2027-02-05"],
+      "deliveryMode": "in_person",
+      "city": "Worcester",
+      "notes": "Surplus diagnostics reagents and plasticware."
+    },
+    {
+      "id": "off-gr-speaker",
+      "companyId": "co-granite",
+      "type": "speaker",
+      "capacity": 40,
+      "availableDates": ["2027-03-01"],
+      "deliveryMode": "virtual",
+      "city": "Worcester",
+      "notes": "A talk on clinical diagnostics and quality control."
+    }
+  ],
+
+  "asks": [
+    {
+      "id": "ask-liss-tour",
+      "orgId": "org-liss",
+      "type": "lab_tour",
+      "groupSize": 20,
+      "preferredDates": ["2027-02-10"],
+      "deliveryMode": "in_person",
+      "topic": "molecular biology lab tour",
+      "needsSupplies": false,
+      "status": "matched"
+    }
+  ],
+
+  "inventory": [
+    {
+      "id": "inv-hv-tips",
+      "companyId": "co-harborview",
+      "name": "P200 pipette tips",
+      "category": "plasticware",
+      "quantity": 4800,
+      "unit": "unit",
+      "expiry": "2029-01-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-tubes",
+      "companyId": "co-harborview",
+      "name": "1.5 mL microcentrifuge tubes",
+      "category": "plasticware",
+      "quantity": 2000,
+      "unit": "unit",
+      "expiry": "2030-01-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-agarose",
+      "companyId": "co-harborview",
+      "name": "Agarose powder",
+      "category": "reagent",
+      "quantity": 500,
+      "unit": "g",
+      "expiry": "2028-06-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-tbe",
+      "companyId": "co-harborview",
+      "name": "TBE buffer 10x",
+      "category": "buffer",
+      "quantity": 5,
+      "unit": "L",
+      "expiry": "2027-12-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-loading-dye",
+      "companyId": "co-harborview",
+      "name": "6x gel loading dye",
+      "category": "reagent",
+      "quantity": 40,
+      "unit": "mL",
+      "expiry": "2028-03-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-ladder",
+      "companyId": "co-harborview",
+      "name": "1 kb DNA ladder",
+      "category": "reagent",
+      "quantity": 1500,
+      "unit": "uL",
+      "expiry": "2027-11-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-etbr",
+      "companyId": "co-harborview",
+      "name": "Ethidium bromide solution",
+      "category": "stain",
+      "quantity": 50,
+      "unit": "mL",
+      "expiry": "2028-01-01",
+      "hazardClass": "carcinogen",
+      "hsSafe": false
+    },
+    {
+      "id": "inv-hv-gloves",
+      "companyId": "co-harborview",
+      "name": "Nitrile gloves (medium)",
+      "category": "ppe",
+      "quantity": 1000,
+      "unit": "unit",
+      "expiry": "2029-05-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-plates",
+      "companyId": "co-harborview",
+      "name": "96-well PCR plates",
+      "category": "plasticware",
+      "quantity": 300,
+      "unit": "unit",
+      "expiry": "2030-01-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-ethanol",
+      "companyId": "co-harborview",
+      "name": "Ethanol 70%",
+      "category": "solvent",
+      "quantity": 10,
+      "unit": "L",
+      "expiry": "2028-08-01",
+      "hazardClass": "flammable",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-expired-taq",
+      "companyId": "co-harborview",
+      "name": "Taq polymerase (old lot)",
+      "category": "enzyme",
+      "quantity": 200,
+      "unit": "uL",
+      "expiry": "2025-03-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-hv-phenol",
+      "companyId": "co-harborview",
+      "name": "Phenol-chloroform mixture",
+      "category": "solvent",
+      "quantity": 250,
+      "unit": "mL",
+      "expiry": "2027-09-01",
+      "hazardClass": "toxic",
+      "hsSafe": false
+    },
+    {
+      "id": "inv-tp-acrylamide",
+      "companyId": "co-tidepool",
+      "name": "Unpolymerized acrylamide solution 40%",
+      "category": "reagent",
+      "quantity": 500,
+      "unit": "mL",
+      "expiry": "2028-02-01",
+      "hazardClass": "carcinogen",
+      "hsSafe": false
+    },
+    {
+      "id": "inv-tp-primers",
+      "companyId": "co-tidepool",
+      "name": "PCR primer mix",
+      "category": "reagent",
+      "quantity": 2000,
+      "unit": "uL",
+      "expiry": "2027-10-25",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-mastermix",
+      "companyId": "co-tidepool",
+      "name": "2x PCR master mix",
+      "category": "reagent",
+      "quantity": 25,
+      "unit": "mL",
+      "expiry": "2027-12-15",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-tips",
+      "companyId": "co-tidepool",
+      "name": "P1000 pipette tips",
+      "category": "plasticware",
+      "quantity": 3200,
+      "unit": "unit",
+      "expiry": "2029-07-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-agarose",
+      "companyId": "co-tidepool",
+      "name": "Agarose powder",
+      "category": "reagent",
+      "quantity": 250,
+      "unit": "g",
+      "expiry": "2028-04-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-expired-buffer",
+      "companyId": "co-tidepool",
+      "name": "Running buffer (old)",
+      "category": "buffer",
+      "quantity": 2,
+      "unit": "L",
+      "expiry": "2024-11-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-gloves",
+      "companyId": "co-tidepool",
+      "name": "Nitrile gloves (large)",
+      "category": "ppe",
+      "quantity": 800,
+      "unit": "unit",
+      "expiry": "2029-03-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-tubes",
+      "companyId": "co-tidepool",
+      "name": "0.2 mL PCR tubes",
+      "category": "plasticware",
+      "quantity": 1500,
+      "unit": "unit",
+      "expiry": "2030-02-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-tp-methanol",
+      "companyId": "co-tidepool",
+      "name": "Methanol",
+      "category": "solvent",
+      "quantity": 4,
+      "unit": "L",
+      "expiry": "2028-09-01",
+      "hazardClass": "flammable",
+      "hsSafe": false
+    },
+    {
+      "id": "inv-gr-swabs",
+      "companyId": "co-granite",
+      "name": "Sterile collection swabs",
+      "category": "plasticware",
+      "quantity": 5000,
+      "unit": "unit",
+      "expiry": "2029-01-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-gr-petri",
+      "companyId": "co-granite",
+      "name": "Petri dishes (90 mm)",
+      "category": "plasticware",
+      "quantity": 1200,
+      "unit": "unit",
+      "expiry": "2030-01-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-gr-agar",
+      "companyId": "co-granite",
+      "name": "LB agar powder",
+      "category": "media",
+      "quantity": 1000,
+      "unit": "g",
+      "expiry": "2028-07-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-gr-bleach",
+      "companyId": "co-granite",
+      "name": "Sodium hypochlorite 10%",
+      "category": "disinfectant",
+      "quantity": 8,
+      "unit": "L",
+      "expiry": "2028-05-01",
+      "hazardClass": "corrosive",
+      "hsSafe": false
+    },
+    {
+      "id": "inv-gr-loops",
+      "companyId": "co-granite",
+      "name": "Inoculation loops (disposable)",
+      "category": "plasticware",
+      "quantity": 2000,
+      "unit": "unit",
+      "expiry": "2029-11-01",
+      "hazardClass": "none",
+      "hsSafe": true
+    },
+    {
+      "id": "inv-gr-saline",
+      "companyId": "co-granite",
+      "name": "Sterile saline 0.9%",
+      "category": "buffer",
+      "quantity": 12,
+      "unit": "L",
+      "expiry": "2028-01-15",
+      "hazardClass": "none",
+      "hsSafe": true
+    }
+  ],
+
+  "timeline": [
+    {
+      "id": "ev-liss-1",
+      "orgId": "org-liss",
+      "companyId": "co-harborview",
+      "kind": "ask",
+      "date": "2026-02-10",
+      "seq": 1,
+      "summary": "Submitted a supplies ask for a DNA extraction workshop.",
+      "refs": ["org-liss", "co-harborview"]
+    },
+    {
+      "id": "ev-liss-2",
+      "orgId": "org-liss",
+      "companyId": "co-harborview",
+      "kind": "match",
+      "date": "2026-02-12",
+      "seq": 1,
+      "summary": "Matched to Harborview Therapeutics surplus consumables offer.",
+      "refs": ["org-liss", "co-harborview", "off-hv-supplies"]
+    },
+    {
+      "id": "ev-liss-3",
+      "orgId": "org-liss",
+      "companyId": "co-harborview",
+      "kind": "accepted",
+      "date": "2026-02-15",
+      "seq": 1,
+      "summary": "Harborview accepted the supplies ask; pickup scheduled.",
+      "refs": ["org-liss", "co-harborview"]
+    },
+    {
+      "id": "ev-liss-4",
+      "orgId": "org-liss",
+      "companyId": "co-harborview",
+      "kind": "donation",
+      "date": "2026-02-20",
+      "seq": 1,
+      "summary": "Received pipette tips, tubes, and agarose from Harborview.",
+      "refs": ["org-liss", "co-harborview"]
+    },
+    {
+      "id": "ev-liss-5",
+      "orgId": "org-liss",
+      "companyId": "co-tidepool",
+      "kind": "visit",
+      "date": "2026-04-05",
+      "seq": 1,
+      "summary": "Members toured Tidepool Biosciences sequencing facility.",
+      "refs": ["org-liss", "co-tidepool", "off-tp-tour"]
+    },
+    {
+      "id": "ev-liss-6",
+      "orgId": "org-liss",
+      "companyId": "co-harborview",
+      "kind": "visit",
+      "date": "2026-05-18",
+      "seq": 1,
+      "summary": "Attended a Latino Professionals Network career conversation at Harborview.",
+      "refs": ["org-liss", "co-harborview", "erg-harborview-latino"]
+    }
+  ],
+
+  "cityCoords": [
+    { "city": "Boston", "lat": 42.3601, "lon": -71.0589 },
+    { "city": "Cambridge", "lat": 42.3736, "lon": -71.1097 },
+    { "city": "Worcester", "lat": 42.2626, "lon": -71.8023 },
+    { "city": "Lowell", "lat": 42.6334, "lon": -71.3162 },
+    { "city": "Springfield", "lat": 42.1015, "lon": -72.5898 },
+    { "city": "Framingham", "lat": 42.2793, "lon": -71.4162 },
+    { "city": "Quincy", "lat": 42.2529, "lon": -71.0023 },
+    { "city": "Lynn", "lat": 42.4668, "lon": -70.9495 },
+    { "city": "Newton", "lat": 42.337, "lon": -71.2092 },
+    { "city": "Somerville", "lat": 42.3876, "lon": -71.0995 },
+    { "city": "Lawrence", "lat": 42.707, "lon": -71.1631 },
+    { "city": "Brockton", "lat": 42.0834, "lon": -71.0184 },
+    { "city": "Fall River", "lat": 41.7015, "lon": -71.155 },
+    { "city": "New Bedford", "lat": 41.6362, "lon": -70.9342 },
+    { "city": "Pittsfield", "lat": 42.4501, "lon": -73.2454 }
+  ]
+}
