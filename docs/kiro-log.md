@@ -96,3 +96,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 12 — `src/lib/ai/run.ts`, the single AI enforcement point: provider → JSON parse → zod validate → one retry with the error appended → optional id-scope guard (CP9) → typed fallback. Added 5 wrapper tests driven by scripted stub providers.
 - **What happened (good or bad):** Worth noting for the write-up — the retry/fallback paths are exercised directly by stub providers rather than the mock: (1) invalid-then-valid proves exactly ONE retry fires and the retry prompt literally contains the prior validation error; (2) invalid-twice returns the typed fallback and stops (no third attempt); (3) a payload that is schema-valid but cites an out-of-scope id ("ROGUE-ID") is still rejected by `validateReferencedIds` and falls back — the case a plain schema check would have missed. lint + test green (124).
 - **Screenshot:**
+
+- **Time:** Afternoon
+- **Who:** Jonat (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution / property-minded safety wiring
+- **What we did:** Task 25 — company page (dashboard of matched asks, offer create form, ERG-gated event posting, CSV inventory upload → review → confirm) and the advisor approval queue (approve/reject, org-ownership checked). Plus Task 25.3 accessibility tests.
+- **What happened (good or bad):** Two safety guarantees are wired through the UI even before the API routes exist: the company dashboard filters asks through the pure `visibleToCompany` so pending/rejected HS asks never show (Property 2), and inventory confirm sets `hsSafe` via `computeHsSafe` — the uploaded value is never trusted (Req 14.2). The review table labels the HS-safe column as rule-set, so the UI itself communicates "AI/human suggests, rules decide". Accessibility tests render components with `react-dom/server` (no new deps) and assert label↔control and error↔field wiring; needed `esbuild.jsx: "automatic"` in vitest config so `.tsx` tests compile without importing React. 25.3 scope note: login + advisor are owned here; composer/supplies (Task 24) are a teammate's, so those page-level checks fall to them — the shared components they reuse are covered. lint + 132 tests green.
+- **Screenshot:**

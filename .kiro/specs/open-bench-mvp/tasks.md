@@ -275,16 +275,16 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Experiment + group-size form with range validation; show the coverage report (covered/partial/missing + supplying company); render the adapted protocol with missing lines and, for HS clubs, the "Advisor must review before running" text; render typed fallbacks
     - _Requirements: 10.1, 10.2, 11.2, 12.1, 12.3, 12.5, 12.6_
 
-- [ ] 25. Build the company and advisor pages
-  - [ ] 25.1 Implement `src/app/company/[id]` dashboard, offers, and inventory upload
+- [x] 25. Build the company and advisor pages
+  - [x] 25.1 Implement `src/app/company/[id]` dashboard, offers, and inventory upload
     - Dashboard of matched asks sorted by score with reasons (and no-reasons/empty states); offer create/edit forms with per-field validation and ownership enforcement; ERG event posting gated on an existing ERG; CSV upload → editable normalization review table → confirm-to-save
     - _Requirements: 4.1, 4.3, 4.6, 5.1, 5.2, 5.3, 5.4, 5.5, 7.3, 7.4, 13.3, 13.4, 13.5_
 
-  - [ ] 25.2 Implement `src/app/advisor` approval queue
+  - [x] 25.2 Implement `src/app/advisor` approval queue
     - List only this advisor's org `pending_advisor_approval` asks; approve and reject actions wired to the advisor routes; confirmation of outcome
     - _Requirements: 9.3, 9.5, 9.6_
 
-  - [ ]* 25.3 Write accessibility checks for key pages
+  - [x]* 25.3 Write accessibility checks for key pages
     - Verify labeled fields, keyboard navigation, and error-to-field association on login, composer, supplies, and advisor pages (automated checks; note full AA needs manual assistive-tech review)
     - _Requirements: 1.4, 2.3_
 
