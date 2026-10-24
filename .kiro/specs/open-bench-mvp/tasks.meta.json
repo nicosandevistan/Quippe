@@ -3,6 +3,10 @@
     "4.2 Write Property 1 test: hs_safe items never reach a high school club": {
       "status": "passed",
       "lastRunTimestamp": 1792860014528
+    },
+    "7.3 Write Property 6 test: matching is deterministic": {
+      "status": "passed",
+      "lastRunTimestamp": 1792861013942
     }
   },
   "executionHistory": {
@@ -231,6 +235,104 @@
         "executionId": "444a1908-3075-4d79-8741-fa8397136606",
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792860221372
+      }
+    ],
+    "6.1 Implement `buildCoverage` in `src/lib/core/coverage.ts`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860405339
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860561776
+      }
+    ],
+    "7.1 Implement `applyHardFilters` in `src/lib/core/matching.ts`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860406455
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860562688
+      }
+    ],
+    "6. Implement pure core: coverage (allocation + classification)": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860561841
+      }
+    ],
+    "7.2 Implement `rankMatches`, `topicFit`, and `ergFit`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860568555
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860816206
+      }
+    ],
+    "6.2 Write Property 8 test: coverage \"fully covered\" iff allocated ≥ needed": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860569948
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860817649
+      }
+    ],
+    "6.3 Write Property 5 test: expired items never appear": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860570797
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860818264
+      }
+    ],
+    "7. Implement pure core: matching engine (hard filters + soft score)": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860816268
+      }
+    ],
+    "7.3 Write Property 6 test: matching is deterministic": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860821929
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792861041695
+      }
+    ],
+    "7.4 Write supporting property/unit tests for matching": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860822541
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792861042704
       }
     ]
   }

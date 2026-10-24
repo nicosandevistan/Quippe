@@ -77,36 +77,36 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Create `tests/properties/prop04-allocation-invariant.property.test.ts`; for all available quantities and demand sequences, `allocate` returns allocations whose sum ≤ available (≥100 iterations)
     - **Validates: Requirements 18.2**
 
-- [ ] 6. Implement pure core: coverage (allocation + classification)
-  - [ ] 6.1 Implement `buildCoverage` in `src/lib/core/coverage.ts`
+- [x] 6. Implement pure core: coverage (allocation + classification)
+  - [x] 6.1 Implement `buildCoverage` in `src/lib/core/coverage.ts`
     - Filter expired items (expiry ≤ `now`) and, for `high_school_club`, items with `hsSafe === false`; normalize names, match by category, convert units via `convert`, allocate via `allocate`, and classify each line covered/partial/missing with supplying company on covered/partial and none on missing; identical BOM + inventory snapshot ⇒ identical report
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.6, 11.7, 12.5, 14.4, 15.8; Property 1, Property 5, Property 8_
 
-  - [ ]* 6.2 Write Property 8 test: coverage "fully covered" iff allocated ≥ needed
+  - [x]* 6.2 Write Property 8 test: coverage "fully covered" iff allocated ≥ needed
     - **Property 8: coverage "fully covered" iff allocated ≥ needed**
     - Create `tests/properties/prop08-coverage-biconditional.property.test.ts`; for all BOMs and inventory, each line is `covered` iff allocated ≥ needed, `partial` iff 0 < allocated < needed, `missing` iff allocated === 0 (≥100 iterations)
     - **Validates: Requirements 11.3, 11.4**
 
-  - [ ]* 6.3 Write Property 5 test: expired items never appear
+  - [x]* 6.3 Write Property 5 test: expired items never appear
     - **Property 5: expired items never appear**
     - Create `tests/properties/prop05-expiry-exclusion.property.test.ts`; for all inventory snapshots and run dates, items with expiry ≤ run date are excluded from coverage and matches, later-expiry items retained (exercises the expiry filter used by `buildCoverage` and `applyHardFilters`; ≥100 iterations)
     - **Validates: Requirements 11.7, 14.4, 15.8**
 
-- [ ] 7. Implement pure core: matching engine (hard filters + soft score)
-  - [ ] 7.1 Implement `applyHardFilters` in `src/lib/core/matching.ts`
+- [x] 7. Implement pure core: matching engine (hard filters + soft score)
+  - [x] 7.1 Implement `applyHardFilters` in `src/lib/core/matching.ts`
     - Receive `now` as an argument; no I/O, no randomness. Exclude pairs on: offer/ask type mismatch, remaining capacity < group size, no preferred/available date overlap, org age < offer minAge, in-person distance over limit or missing coordinates for either side (straight-line from the city-coords table), expired items, and `hsSafe === false` items for HS clubs
     - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5, 15.6, 15.7, 15.8, 15.9, 15.10; Property 1, Property 5_
 
-  - [ ] 7.2 Implement `rankMatches`, `topicFit`, and `ergFit`
+  - [x] 7.2 Implement `rankMatches`, `topicFit`, and `ergFit`
     - `topicFit(askText, offerText)` → 0..1 from keyword overlap; `ergFit(orgMission, askText, ergDescription)` → 0..1 using only those texts (`src/lib/core/erg.ts`); `rankMatches` computes a weighted soft score (topic fit, distance, under_resourced, fairness) in [0,1], emits one plain-language reason per contributing factor, ranks zero-past-match orgs above matched ones on ties, excludes candidates with missing scoring inputs (recording a reason), and is fully deterministic for identical inputs
     - _Requirements: 7.5, 16.1, 16.2, 16.3, 16.4, 16.5, 16.6; Property 6_
 
-  - [ ]* 7.3 Write Property 6 test: matching is deterministic
+  - [x]* 7.3 Write Property 6 test: matching is deterministic
     - **Property 6: matching is deterministic**
     - Create `tests/properties/prop06-matching-determinism.property.test.ts`; for all offers/asks/orgs/coords/run dates, two `rankMatches` invocations with identical inputs produce identical match sets in identical order, including tie-break fairness (≥100 iterations)
     - **Validates: Requirements 16.6**
 
-  - [ ]* 7.4 Write supporting property/unit tests for matching
+  - [x]* 7.4 Write supporting property/unit tests for matching
     - Hard-filter soundness (type mismatch, capacity < group size, no date overlap, under-min-age, over-distance, missing coords always exclude) and soft-score bounds (score ∈ [0,1], one reason per contributing factor) via fast-check; unit test `ergFit` uses only mission/ask/erg-description text
     - _Requirements: 7.5, 15.2, 15.3, 15.4, 15.5, 15.6, 15.7, 16.1, 16.4_
 
