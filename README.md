@@ -42,7 +42,7 @@ Pick a role on `/login`. There is no sign-up and no password: selecting an accou
 6. Switch demo account to the high school advisor. An in-person request waits in the approval queue. Approve it, and note that items not safe for high schools never appear in that club's supply list.
 7. Back as the officer, the club page timeline shows everything. Click Generate handoff summary.
 
-## Challenge track: Healthcare and Biotech
+## Challenge track: Civic Action (Better college experiences; Pathways to education and opportunity)
 
 ## How we used Kiro
 
