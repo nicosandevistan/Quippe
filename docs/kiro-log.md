@@ -72,3 +72,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Executed Task 22 (shared UI components) on a `ui` branch: FormField (label + aria error wiring), EmptyState, Acronym (explains on first use), TimelineList, and a role-aware PageShell with a skip link.
 - **What happened (good or bad):** Steering (product.md principles 5–6: plain language + accessible) drove the component API — every field is labeled and errors are tied to their field with aria-describedby. Built against design.md contracts; pages read the repo on the server as a temporary stand-in with TODOs to switch to the API routes once they land. Lint + 119 tests stayed green.
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI layer (mock-first)
+- **What we did:** Task 11 — AI provider interface + mock/live providers (`src/lib/ai/provider.ts`) and prompt templates with matching canned mock responses (`src/lib/ai/prompts/index.ts`).
+- **What happened (good or bad):** The app defaults to the mock provider so it runs with zero secrets: `getProvider()` returns the mock unless a live key (Anthropic/Bedrock) is configured. Each prompt embeds a stable `[[TASK:...]]` marker so the mock routes offline without any network. The id-scoped mocks (writeProtocol, handoffSummary) extract the allowed-id list straight from the prompt and echo only those, so the mock can never fabricate an out-of-scope id — which keeps the CP9 id-scope guard exercising the happy path rather than the fallback. lint + test green (119).
+- **Screenshot:**
