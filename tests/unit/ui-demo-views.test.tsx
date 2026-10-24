@@ -5,6 +5,11 @@ import {
   advisorResultText,
 } from "@/components/AdvisorResultMessage";
 import {
+  decisionOutcomeText,
+  visibleAsks,
+  type QueueAsk,
+} from "@/app/advisor/AdvisorQueueRow";
+import {
   DashboardEntryView,
   scorePhrase,
   type DashboardEntry,
@@ -142,6 +147,50 @@ describe("AdvisorResultMessage", () => {
       <AdvisorResultMessage result={{ kind: "done", decision: "approve", status: "matched" }} />,
     );
     expect(html).toMatch(/role="status"[^>]*><p[^>]*>Approved\. Companies can now see it\. It already matches an offer\./);
+  });
+});
+describe("AdvisorQueue visibleAsks + decisionOutcomeText", () => {
+  const asks: QueueAsk[] = [
+    {
+      id: "ask-a",
+      topic: "visit a working biotech lab",
+      groupSize: 12,
+      deliveryMode: "in_person",
+      preferredDates: [],
+    },
+    {
+      id: "ask-b",
+      topic: "speaker on genomics careers",
+      groupSize: 30,
+      deliveryMode: "virtual",
+      preferredDates: [],
+    },
+  ];
+  it("keeps every ask when nothing has been decided", () => {
+    expect(visibleAsks(asks, new Set()).map((a) => a.id)).toEqual([
+      "ask-a",
+      "ask-b",
+    ]);
+  });
+  it("drops an ask once its decision succeeded, even while still in the prop list", () => {
+    // A just-decided card leaves immediately: it is filtered out of the prop
+    // list before the server stops returning it.
+    const shown = visibleAsks(asks, new Set(["ask-a"]));
+    expect(shown.map((a) => a.id)).toEqual(["ask-b"]);
+  });
+  it("empties the list when all asks are decided (empty state would show)", () => {
+    expect(visibleAsks(asks, new Set(["ask-a", "ask-b"]))).toEqual([]);
+  });
+  it("accepts an array of decided ids as well as a Set", () => {
+    expect(visibleAsks(asks, ["ask-b"]).map((a) => a.id)).toEqual(["ask-a"]);
+  });
+  it("announces the last decision in sentence case for the persistent region", () => {
+    expect(
+      decisionOutcomeText({ decision: "approve", topic: "visit a working biotech lab" }),
+    ).toBe("Approved: Visit a working biotech lab.");
+    expect(
+      decisionOutcomeText({ decision: "reject", topic: "speaker on genomics careers" }),
+    ).toBe("Rejected: Speaker on genomics careers.");
   });
 });
 describe("HandoffSummaryView", () => {
