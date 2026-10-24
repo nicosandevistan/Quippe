@@ -249,7 +249,7 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Oversize/over-row upload rejected with limit message and unchanged items; nothing persisted before confirm; on confirm `hsSafe` is rule-computed (AI value overridden) and items persist
     - _Requirements: 13.2, 13.4, 13.5, 14.2_
 
-- [ ] 21. Checkpoint - API surface complete
+- [x] 21. Checkpoint - API surface complete
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 22. Build shared UI components
