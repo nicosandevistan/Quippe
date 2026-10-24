@@ -32,47 +32,47 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Test accept/reject at edges: offer capacity 1 and 10000 (and 0, 10001 rejected), minAge 0 and 25, notes length 2000 vs 2001; ERG name/description/topics/capacity bounds; Ask groupSize 1 and 500; BOM line count 1 and 200; invalid offer type rejected
     - _Requirements: 4.2, 4.5, 4.6, 7.1, 7.2, 8.1, 10.1_
 
-- [ ] 3. Implement pure core: units and conversion
-  - [ ] 3.1 Implement `convert` in `src/lib/core/units.ts`
+- [x] 3. Implement pure core: units and conversion
+  - [x] 3.1 Implement `convert` in `src/lib/core/units.ts`
     - Convert within volume (µL/mL/L) and mass (mg/g) dimensions; return `null` for cross-dimension pairs and for `unit`
     - _Requirements: 11.5, 11.6_
 
-  - [ ]* 3.2 Write Property 7 test: unit conversions round-trip within tolerance
+  - [x]* 3.2 Write Property 7 test: unit conversions round-trip within tolerance
     - **Property 7: unit conversions round-trip within tolerance**
     - Create `tests/properties/prop07-unit-roundtrip.property.test.ts`; for all positive quantities and same-dimension unit pairs, convert-then-back returns the original within relative tolerance 0.0001; cross-dimension returns the non-convertible signal (≥100 iterations)
     - **Validates: Requirements 11.5**
 
-- [ ] 4. Implement pure core: safety and high-school rules
-  - [ ] 4.1 Implement `computeHsSafe`, `visibleToCompany`, `gateHighSchoolInPerson` in `src/lib/core/safety.ts`
+- [x] 4. Implement pure core: safety and high-school rules
+  - [x] 4.1 Implement `computeHsSafe`, `visibleToCompany`, `gateHighSchoolInPerson` in `src/lib/core/safety.ts`
     - `computeHsSafe` evaluates hazard class + keyword match against a configured keyword list, overrides any AI suggestion, and collapses to `false` on disagreement or missing/unknown hazard class
     - `visibleToCompany` returns false for `pending_advisor_approval` and `rejected`; `gateHighSchoolInPerson` returns `pending_advisor_approval` for in-person HS asks and `open` otherwise
     - _Requirements: 9.1, 14.1, 14.2, 14.3; Property 1, Property 2_
 
-  - [ ]* 4.2 Write Property 1 test: hs_safe items never reach a high school club
+  - [x]* 4.2 Write Property 1 test: hs_safe items never reach a high school club
     - **Property 1: hs_safe items never reach a high school club**
     - Create `tests/properties/prop01-hs-safe-exclusion.property.test.ts`; for all inventory snapshots and HS-club asks, no item with `hsSafe === false` appears in filtered matches, coverage item refs, or protocol inputs; non-HS orgs keep otherwise-eligible items (exercises `applyHardFilters` + `buildCoverage`; ≥100 iterations)
     - **Validates: Requirements 12.5, 15.9**
 
-  - [ ]* 4.3 Write Property 2 test: pending approval asks are hidden from companies
+  - [x]* 4.3 Write Property 2 test: pending approval asks are hidden from companies
     - **Property 2: pending approval asks are hidden from companies**
     - Create `tests/properties/prop02-pending-hidden.property.test.ts`; for all asks, `pending_advisor_approval`/`rejected` ⇒ `visibleToCompany` false and absent from company-facing filters; company-visible statuses retained (≥100 iterations)
     - **Validates: Requirements 5.6, 9.2**
 
-  - [ ]* 4.4 Write unit tests for hs_safe rule edges
+  - [x]* 4.4 Write unit tests for hs_safe rule edges
     - Test AI/rule disagreement collapses to false; missing/unknown hazard class ⇒ false; keyword hit forces false
     - _Requirements: 14.2, 14.3_
 
-- [ ] 5. Implement pure core: capacity and allocation
-  - [ ] 5.1 Implement `canAccept` and `allocate` in `src/lib/core/capacity.ts`
+- [x] 5. Implement pure core: capacity and allocation
+  - [x] 5.1 Implement `canAccept` and `allocate` in `src/lib/core/capacity.ts`
     - `canAccept(offer, acceptedGroupSizesInPeriod, newGroupSize)` returns true iff the new accept keeps the summed group size ≤ capacity; `allocate(available, demands)` returns per-demand allocations whose sum is ≤ available
     - _Requirements: 6.6, 6.7, 18.1, 18.2; Property 3, Property 4_
 
-  - [ ]* 5.2 Write Property 3 test: accepted group size never exceeds offer capacity
+  - [x]* 5.2 Write Property 3 test: accepted group size never exceeds offer capacity
     - **Property 3: accepted group size never exceeds offer capacity**
     - Create `tests/properties/prop03-capacity-invariant.property.test.ts`; for all capacities and accept-attempt sequences, folding `canAccept` keeps the accepted total ≤ capacity at every step and refuses exactly when it would overflow (≥100 iterations)
     - **Validates: Requirements 6.7, 18.1**
 
-  - [ ]* 5.3 Write Property 4 test: allocated quantity never exceeds available
+  - [x]* 5.3 Write Property 4 test: allocated quantity never exceeds available
     - **Property 4: allocated inventory quantity never exceeds available**
     - Create `tests/properties/prop04-allocation-invariant.property.test.ts`; for all available quantities and demand sequences, `allocate` returns allocations whose sum ≤ available (≥100 iterations)
     - **Validates: Requirements 18.2**
@@ -110,19 +110,19 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Hard-filter soundness (type mismatch, capacity < group size, no date overlap, under-min-age, over-distance, missing coords always exclude) and soft-score bounds (score ∈ [0,1], one reason per contributing factor) via fast-check; unit test `ergFit` uses only mission/ask/erg-description text
     - _Requirements: 7.5, 15.2, 15.3, 15.4, 15.5, 15.6, 15.7, 16.1, 16.4_
 
-- [ ] 8. Implement pure core: eligibility, timeline sort, id-scope validator
-  - [ ] 8.1 Implement `rejectsStudentIdentity`, `sortTimeline`, `validateReferencedIds`
+- [x] 8. Implement pure core: eligibility, timeline sort, id-scope validator
+  - [x] 8.1 Implement `rejectsStudentIdentity`, `sortTimeline`, `validateReferencedIds`
     - `src/lib/core/eligibility.ts`: `rejectsStudentIdentity(payload)` flags any student personal-identity attribute (full name, DOB, home address, personal email/phone, photo, government ID) by field/keyword guard
     - `src/lib/core/timeline.ts`: `sortTimeline` orders by date descending then `seq` ascending (stable, identical on repeated calls)
     - `src/lib/core/refs.ts`: `validateReferencedIds(referenced, allowed)` returns true iff every referenced ID is in the allowed set
     - _Requirements: 2.4, 3.3, 7.6, 12.2, 17.5, 19.6; Property 9_
 
-  - [ ]* 8.2 Write Property 9 test: AI outputs reference only input IDs
+  - [x]* 8.2 Write Property 9 test: AI outputs reference only input IDs
     - **Property 9: AI outputs reference only input IDs**
     - Create `tests/properties/prop09-id-scope.property.test.ts`; for all allowed-ID sets and referenced-ID lists, `validateReferencedIds` accepts iff every referenced ID is in the allowed set (≥100 iterations)
     - **Validates: Requirements 3.3, 12.2, 19.6**
 
-  - [ ]* 8.3 Write unit tests for eligibility and timeline sort
+  - [x]* 8.3 Write unit tests for eligibility and timeline sort
     - `rejectsStudentIdentity` rejects each listed identity attribute and passes mission/ask text; `sortTimeline` is stable reverse-chron and identical on repeated calls (same-date tie-break by `seq`)
     - _Requirements: 2.4, 7.6, 17.5_
 

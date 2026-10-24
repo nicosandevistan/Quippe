@@ -1,5 +1,10 @@
 {
-  "pbtResults": {},
+  "pbtResults": {
+    "4.2 Write Property 1 test: hs_safe items never reach a high school club": {
+      "status": "passed",
+      "lastRunTimestamp": 1792860014528
+    }
+  },
   "executionHistory": {
     "1. Scaffold the project and tooling": [
       {
@@ -54,6 +59,178 @@
         "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792859384897
+      }
+    ],
+    "3.1 Implement `convert` in `src/lib/core/units.ts`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859702661
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859852923
+      }
+    ],
+    "4.1 Implement `computeHsSafe`, `visibleToCompany`, `gateHighSchoolInPerson` in `src/lib/core/safety.ts`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859704049
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859854314
+      }
+    ],
+    "5.1 Implement `canAccept` and `allocate` in `src/lib/core/capacity.ts`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859705450
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859855816
+      }
+    ],
+    "8.1 Implement `rejectsStudentIdentity`, `sortTimeline`, `validateReferencedIds`": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859706413
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859856981
+      }
+    ],
+    "3. Implement pure core: units and conversion": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859852979
+      }
+    ],
+    "4. Implement pure core: safety and high-school rules": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859854360
+      }
+    ],
+    "5. Implement pure core: capacity and allocation": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859855855
+      }
+    ],
+    "8. Implement pure core: eligibility, timeline sort, id-scope validator": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859857028
+      }
+    ],
+    "3.2 Write Property 7 test: unit conversions round-trip within tolerance": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859864484
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860033391
+      }
+    ],
+    "4.2 Write Property 1 test: hs_safe items never reach a high school club": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859870185
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860034320
+      }
+    ],
+    "4.3 Write Property 2 test: pending approval asks are hidden from companies": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859871580
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860035700
+      }
+    ],
+    "4.4 Write unit tests for hs_safe rule edges": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859872291
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860036484
+      }
+    ],
+    "5.2 Write Property 3 test: accepted group size never exceeds offer capacity": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860040022
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860218108
+      }
+    ],
+    "5.3 Write Property 4 test: allocated quantity never exceeds available": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860041431
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860219535
+      }
+    ],
+    "8.2 Write Property 9 test: AI outputs reference only input IDs": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860042367
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860220433
+      }
+    ],
+    "8.3 Write unit tests for eligibility and timeline sort": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860043417
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792860221372
       }
     ]
   }
