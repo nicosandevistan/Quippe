@@ -64,3 +64,35 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Pulled main, branched `feat/ai-layer-provider`, installed Node 24 LTS (winget), ran `npm install` once, and continued the spec from the next unchecked task. Tasks 1–9 (deterministic core, 107 tests) were already on main; the next open work was Task 10 (data layer).
 - **What happened (good or bad):** Implemented Task 10 end to end: the in-memory `Repo` (`src/lib/data/repo.ts`) matching the design interface with `listInventory` applying the expired-item filter on every read; `seed.json` with all-fictional data (3 companies in Boston/Cambridge/Worcester, 4 orgs incl. a HS club with advisor and the college club with 6 past timeline events, 3 ERGs, 9 offers, 27 inventory items with 6 hazardous + 2 expired, a 15-city MA coordinate table, one account per role); and a `seed:check` validator (`scripts/seed-check.ts`) that schema-validates the seed, checks referential integrity, and asserts the required demo fixtures. Added 12 repo/seed unit tests. `npm run seed:check`, `npm run lint`, and `npm test` all green (119 tests). One gotcha logged: zod `.optional()` rejects JSON `null`, so non-HS orgs omit `advisorAccountId` entirely.
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI layer (mock-first)
+- **What we did:** Task 11 — AI provider interface + mock/live providers (`src/lib/ai/provider.ts`) and prompt templates with matching canned mock responses (`src/lib/ai/prompts/index.ts`).
+- **What happened (good or bad):** The app defaults to the mock provider so it runs with zero secrets: `getProvider()` returns the mock unless a live key (Anthropic/Bedrock) is configured. Each prompt embeds a stable `[[TASK:...]]` marker so the mock routes offline without any network. The id-scoped mocks (writeProtocol, handoffSummary) extract the allowed-id list straight from the prompt and echo only those, so the mock can never fabricate an out-of-scope id — which keeps the CP9 id-scope guard exercising the happy path rather than the fallback. lint + test green (119).
+- **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI wrapper + stub-provider tests
+- **What we did:** Task 12 — `src/lib/ai/run.ts`, the single AI enforcement point: provider → JSON parse → zod validate → one retry with the error appended → optional id-scope guard (CP9) → typed fallback. Added 5 wrapper tests driven by scripted stub providers.
+- **What happened (good or bad):** Worth noting for the write-up — the retry/fallback paths are exercised directly by stub providers rather than the mock: (1) invalid-then-valid proves exactly ONE retry fires and the retry prompt literally contains the prior validation error; (2) invalid-twice returns the typed fallback and stops (no third attempt); (3) a payload that is schema-valid but cites an out-of-scope id ("ROGUE-ID") is still rejected by `validateReferencedIds` and falls back — the case a plain schema check would have missed. lint + test green (124).
+- **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI module functions (bug caught by type-check)
+- **What we did:** Task 13 — `src/lib/ai/index.ts` wires the five AI functions (composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory) through the wrapper with each one's output schema, typed fallback, and (for the id-scoped ones) the allowed-id set. Added 8 unit tests against the mock provider. Defined the `Protocol` schema locally in the AI layer (it is an AI-output shape, not a core domain entity, and the spec places no Protocol schema in `src/lib/schemas`).
+- **What happened (good or bad):** `tsc --noEmit` (part of `npm run lint`) caught a real type bug the unit tests passed straight through: `run()` typed its `schema` as `z.ZodType<T>`, which a zod schema containing BRANDED id types (ZodBranded, where input ≠ output) does not satisfy — so `run({ schema: BOM })` failed to compile. Fixed by widening the parameter to `z.ZodType<T, z.ZodTypeDef, unknown>`. A good example of the type-checker catching something the runtime tests could not. Also enforced Req 12.3 defensively: even a schema-valid protocol is rejected to the fallback if it omits any missing BOM line. lint + test green (132).
+- **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — Task 14 checkpoint
+- **What we did:** Task 14 checkpoint — core + data + AI layers complete. Ran seed:check, lint, and the full test suite.
+- **What happened (good or bad):** All green: `seed:check` OK, `npm run lint` clean, `npm test` 132 passed across 17 files. The whole AI layer runs on the mock provider with no API key. No open questions at the checkpoint; next layer is the API routes (Task 15+).
+- **Screenshot:**

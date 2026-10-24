@@ -149,38 +149,38 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Not-found org returns null; `listInventory` never returns expired items; `seed.json` parses and contains the required fictional fixtures (≥3 hazardous, 2 expired, ~6 college-club events, one account per role)
     - _Requirements: 2.6, 14.4, 17.6_
 
-- [ ] 11. Build the AI provider, prompts, and mock responses
-  - [ ] 11.1 Implement the provider interface and mock/live providers in `src/lib/ai/provider.ts`
+- [x] 11. Build the AI provider, prompts, and mock responses
+  - [x] 11.1 Implement the provider interface and mock/live providers in `src/lib/ai/provider.ts`
     - Define `AiProvider.complete({ prompt, maxTokens })`; implement `mockProvider` (matches prompt to a canned, schema-valid response, no network) and a `liveProvider` dispatching to Bedrock/Anthropic by env; `getProvider()` returns mock unless a live key is configured
     - _Requirements: 19.1, 19.2_
 
-  - [ ] 11.2 Author prompt templates and matching mock responses
+  - [x] 11.2 Author prompt templates and matching mock responses
     - Add `src/lib/ai/prompts/*.ts` exported template functions for composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory; each prompt lists only the records (with IDs) the model may use and requires JSON-only output for structuring tasks; add a matching canned schema-valid response in the mock provider for each
     - _Requirements: 19.1, 19.2_
 
-- [ ] 12. Implement the AI wrapper (schema → retry → id-scope → fallback)
-  - [ ] 12.1 Implement `run` in `src/lib/ai/run.ts`
+- [x] 12. Implement the AI wrapper (schema → retry → id-scope → fallback)
+  - [x] 12.1 Implement `run` in `src/lib/ai/run.ts`
     - Call `getProvider().complete`, validate output with the given zod schema, retry exactly once with the validation error appended on failure, run `validateReferencedIds` when an allowed-ID set is supplied (reject out-of-scope IDs), and return the typed fallback when validation ultimately fails; enforce the composer 30s bound
     - _Requirements: 8.4, 8.5, 10.4, 12.4, 13.6, 19.3, 19.4, 19.5, 19.6; Property 9_
 
-  - [ ]* 12.2 Write wrapper tests with stub providers
+  - [x]* 12.2 Write wrapper tests with stub providers
     - Using stub providers against the mock: invalid-then-valid payload verifies the single retry includes the validation error; invalid-twice verifies the typed fallback; unknown-id payload verifies reject-and-fallback via `validateReferencedIds`
     - _Requirements: 8.4, 8.6, 10.5, 12.4, 13.7, 19.4, 19.5, 19.6_
 
-- [ ] 13. Implement the AI module functions
-  - [ ] 13.1 Implement `composeAsks` and `generateBom`
+- [x] 13. Implement the AI module functions
+  - [x] 13.1 Implement `composeAsks` and `generateBom`
     - `composeAsks(text 1..5000)` → `z.array(Ask).min(1).max(20)` with manual-form fallback carrying extracted fields; `generateBom(experiment 1..2000, groupSize 1..500)` → `BOM` with `bom_failed` fallback; both routed through `run`
     - _Requirements: 8.1, 8.3, 8.4, 8.5, 8.6, 10.1, 10.3, 10.4, 10.5_
 
-  - [ ] 13.2 Implement `writeProtocol`, `handoffSummary`, `normalizeInventory`
+  - [x] 13.2 Implement `writeProtocol`, `handoffSummary`, `normalizeInventory`
     - `writeProtocol(coverage)` → Protocol whose item IDs ⊆ coverage item IDs and that lists every missing BOM line, with `protocol_rejected` fallback and the HS "Advisor must review before running" text; `handoffSummary(events)` → `HandoffSummary` with referencedIds ⊆ input refs and `handoff_fallback` (also used when no events); `normalizeInventory(rows)` → `z.array(InventoryItem)` (hsSafe overwritten later by `computeHsSafe`) with `manual_table` fallback
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 12.1, 12.2, 12.3, 12.4, 12.6, 13.1, 13.6, 13.7; Property 9_
 
-  - [ ]* 13.3 Write unit tests for AI module functions
+  - [x]* 13.3 Write unit tests for AI module functions
     - Mock-provider happy paths for each function produce schema-valid output; protocol lists missing lines and includes the HS review text; handoff with no events returns the fallback; normalizeInventory output has its `hsSafe` overridden by `computeHsSafe`
     - _Requirements: 3.5, 12.3, 12.6, 14.2_
 
-- [ ] 14. Checkpoint - core, data, and AI layers complete
+- [x] 14. Checkpoint - core, data, and AI layers complete
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 15. Implement session and shared authorization
