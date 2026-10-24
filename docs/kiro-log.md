@@ -162,10 +162,10 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What happened (good or bad):** Good. Context7 returned the exact passages we needed instead of us guessing: Vercel creates an invocation per request, shares global state only inside one instance, scales to zero, and still has cold starts, and the Next.js self-hosting docs say to replace the in-memory cache when running more than one instance. That explains why the live demo resets even after the `shared-repo-singleton` fix, which only covers one process. It also gave us the production plan: Postgres from the Vercel Marketplace behind our existing `Repo` interface, with `attachDatabasePool` from `@vercel/functions`.
 - **Screenshot:**
 
-- **Time:** 2026-10-24 18:44 EDT
+- **Time:** 2026-10-24 18:59 EDT
 - **Who:** Nico
 - **Kiro tool:** IDE
 - **Feature:** MCP (Playwright)
-- **What we did:** Added the Playwright MCP server to `.kiro/settings/mcp.json` (`npx @playwright/mcp@latest`) and installed Chromium, to run the demo path end to end against `localhost:3000` and save a screenshot per step.
-- **What happened (good or bad):** Not run yet. The server package starts and Chromium is installed, but the Playwright tools were not exposed to the agent session or its sub-agents, so the browser run did not happen. We chose not to fall back to a hand-written Playwright script, because the point was to use the MCP server. No screenshots were saved.
-- **Screenshot:**
+- **What we did:** Added the Playwright MCP server to `.kiro/settings/mcp.json` and had Kiro drive the full demo path against `localhost:3000` at 1280x800: landing, login, club officer, new ask (3 asks drafted and confirmed), supply planner (DNA extraction and gel electrophoresis, 25 people), company liaison accepting the ERG meetup ask, club advisor approving the pending request, and the club officer writing the handoff summary.
+- **What happened (good or bad):** It ran, and every step passed. Getting it connected took two fixes: the config needed the full path `/opt/homebrew/bin/npx` (plus a `PATH` env) because Kiro could not find `npx` on its own, and the Kiro window had to be reloaded before the tools showed up. During the run, the MCP snapshot tool sometimes read a stale page after Next.js client-side navigation, and one browser session hung on screenshots until we restarted it. Driving each step with Playwright code through the same MCP server (`browser_run_code`, waiting for each redirect) made it reliable. The only console error was a missing `favicon.ico` (404).
+- **Screenshot:** `docs/screenshots/01-landing.png` through `docs/screenshots/14-handoff-summary.png`
