@@ -72,3 +72,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 11 — AI provider interface + mock/live providers (`src/lib/ai/provider.ts`) and prompt templates with matching canned mock responses (`src/lib/ai/prompts/index.ts`).
 - **What happened (good or bad):** The app defaults to the mock provider so it runs with zero secrets: `getProvider()` returns the mock unless a live key (Anthropic/Bedrock) is configured. Each prompt embeds a stable `[[TASK:...]]` marker so the mock routes offline without any network. The id-scoped mocks (writeProtocol, handoffSummary) extract the allowed-id list straight from the prompt and echo only those, so the mock can never fabricate an out-of-scope id — which keeps the CP9 id-scope guard exercising the happy path rather than the fallback. lint + test green (119).
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI wrapper + stub-provider tests
+- **What we did:** Task 12 — `src/lib/ai/run.ts`, the single AI enforcement point: provider → JSON parse → zod validate → one retry with the error appended → optional id-scope guard (CP9) → typed fallback. Added 5 wrapper tests driven by scripted stub providers.
+- **What happened (good or bad):** Worth noting for the write-up — the retry/fallback paths are exercised directly by stub providers rather than the mock: (1) invalid-then-valid proves exactly ONE retry fires and the retry prompt literally contains the prior validation error; (2) invalid-twice returns the typed fallback and stops (no third attempt); (3) a payload that is schema-valid but cites an out-of-scope id ("ROGUE-ID") is still rejected by `validateReferencedIds` and falls back — the case a plain schema check would have missed. lint + test green (124).
+- **Screenshot:**
