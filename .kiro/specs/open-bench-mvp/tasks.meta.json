@@ -420,6 +420,49 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792864951414
       }
+    ],
+    "18.2 Implement `GET /api/advisor/queue`, `POST /api/asks/[id]/approve`, `/reject`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865161260
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865384298
+      }
+    ],
+    "18.1 Implement `POST /api/asks/[id]/accept` and `/decline`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865161956
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865383315
+      }
+    ],
+    "18. Implement accept/decline and advisor approval API routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865384346
+      }
+    ],
+    "18.3 Write unit tests for accept/decline and advisor routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865386962
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865582979
+      }
     ]
   }
 }

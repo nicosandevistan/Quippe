@@ -120,3 +120,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 14 checkpoint — core + data + AI layers complete. Ran seed:check, lint, and the full test suite.
 - **What happened (good or bad):** All green: `seed:check` OK, `npm run lint` clean, `npm test` 132 passed across 17 files. The whole AI layer runs on the mock provider with no API key. No open questions at the checkpoint; next layer is the API routes (Task 15+).
 - **Screenshot:**
+
+- **Time:** Afternoon
+- **Who:** Nico
+- **Kiro tool:** IDE
+- **Feature:** spec tasks + parallel sub-agents + git (branch per person)
+- **What we did:** Built the API layer (Tasks 15, 17, 18) on an `api` branch while teammates worked `ai` and `ui` branches: session + shared role guard, offers/ERG/liaison dashboard, and accept/decline + advisor approval routes, with their optional unit tests. Routes stay thin (validate → authorize → core/repo → JSON) and every eligibility/capacity/visibility decision goes through the pure core (canAccept, visibleToCompany, applyHardFilters/rankMatches).
+- **What happened (good or bad):** Dependency note: the task DAG serialized 15/17/18 behind the AI-layer wave, but they only need core + data, so we ran them early in parallel — fine because routes import the AI module only where needed (none of these do). One design call worth recording: there is no persisted Match linking an ask to an offer, so the accept/decline routes take an explicit `offerId` and the capacity gate derives already-committed group sizes conservatively from `accepted` timeline events. After each top-level task we merged origin/main (picking up the ai and ui branches) with no conflicts; suite grew 131 → 144 → 165 → 178 tests, all green.
+- **Screenshot:**

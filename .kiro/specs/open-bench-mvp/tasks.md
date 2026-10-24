@@ -214,16 +214,16 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Invalid offer type and out-of-bounds fields rejected with per-field errors; cross-company edit rejected unchanged; `erg_event` without ERG rejected; dashboard excludes pending HS asks, sorts stably, and shows empty + no-reasons states
     - _Requirements: 4.2, 4.4, 4.6, 5.2, 5.4, 5.5, 5.6, 7.2, 7.4_
 
-- [ ] 18. Implement accept/decline and advisor approval API routes
-  - [ ] 18.1 Implement `POST /api/asks/[id]/accept` and `/decline`
+- [x] 18. Implement accept/decline and advisor approval API routes
+  - [x] 18.1 Implement `POST /api/asks/[id]/accept` and `/decline`
     - Transition only from `matched`; run `canAccept` before accepting and reject capacity-exceeding accepts with no status change and no timeline event; on success write one TimelineEvent to the org timeline and one to the company timeline
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 18.1, 18.3; Property 3_
 
-  - [ ] 18.2 Implement `GET /api/advisor/queue`, `POST /api/asks/[id]/approve`, `/reject`
+  - [x] 18.2 Implement `GET /api/advisor/queue`, `POST /api/asks/[id]/approve`, `/reject`
     - Queue lists only `pending_advisor_approval` asks for the advisor's org; approve → `open`, reject → `rejected`; reject the action for an advisor whose org does not match, leaving status unchanged
     - _Requirements: 9.3, 9.4, 9.5, 9.6_
 
-  - [ ]* 18.3 Write unit tests for accept/decline and advisor routes
+  - [x]* 18.3 Write unit tests for accept/decline and advisor routes
     - Accept/decline only from `matched`; capacity-exceeding accept rejected with no event; dual timeline events on success; advisor approve/reject only from pending by the matching org; mismatched advisor rejected
     - _Requirements: 6.3, 6.7, 9.3, 9.4, 9.5_
 
