@@ -377,6 +377,49 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792864315655
       }
+    ],
+    "17.1 Implement `POST /api/offers`, `PUT /api/offers/[id]`, `POST /api/ergs`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864408411
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864638843
+      }
+    ],
+    "17.2 Implement `GET /api/company/[id]/dashboard`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864409118
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864639841
+      }
+    ],
+    "17. Implement offers, ERG, and liaison dashboard API routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864639888
+      }
+    ],
+    "17.3 Write unit tests for offers/ERG/dashboard routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864642583
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864951414
+      }
     ]
   }
 }

@@ -201,16 +201,16 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Not-found indication for missing org; empty-timeline indicator; handoff fallback on unknown-id and on empty timeline
     - _Requirements: 2.5, 2.6, 3.4, 3.5_
 
-- [ ] 17. Implement offers, ERG, and liaison dashboard API routes
-  - [ ] 17.1 Implement `POST /api/offers`, `PUT /api/offers/[id]`, `POST /api/ergs`
+- [x] 17. Implement offers, ERG, and liaison dashboard API routes
+  - [x] 17.1 Implement `POST /api/offers`, `PUT /api/offers/[id]`, `POST /api/ergs`
     - Create/edit offers with zod validation and per-field errors; ownership check on edit (reject edits to another company's offer, leaving it unchanged); create ERG with bounds; require an ERG before any `erg_event` offer; reject payloads containing student identity via `rejectsStudentIdentity`
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 7.1, 7.2, 7.3, 7.4, 7.6, 7.7_
 
-  - [ ] 17.2 Implement `GET /api/company/[id]/dashboard`
+  - [x] 17.2 Implement `GET /api/company/[id]/dashboard`
     - Return asks matched to the company's offers, sorted by score descending with a stable secondary tie-break, each with reasons (indicate when none available); exclude `pending_advisor_approval`/`rejected` asks via `visibleToCompany`; empty-state when none
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6; Property 2_
 
-  - [ ]* 17.3 Write unit tests for offers/ERG/dashboard routes
+  - [x]* 17.3 Write unit tests for offers/ERG/dashboard routes
     - Invalid offer type and out-of-bounds fields rejected with per-field errors; cross-company edit rejected unchanged; `erg_event` without ERG rejected; dashboard excludes pending HS asks, sorts stably, and shows empty + no-reasons states
     - _Requirements: 4.2, 4.4, 4.6, 5.2, 5.4, 5.5, 5.6, 7.2, 7.4_
 
