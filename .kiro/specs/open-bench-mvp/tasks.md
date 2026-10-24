@@ -167,16 +167,16 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Using stub providers against the mock: invalid-then-valid payload verifies the single retry includes the validation error; invalid-twice verifies the typed fallback; unknown-id payload verifies reject-and-fallback via `validateReferencedIds`
     - _Requirements: 8.4, 8.6, 10.5, 12.4, 13.7, 19.4, 19.5, 19.6_
 
-- [ ] 13. Implement the AI module functions
-  - [ ] 13.1 Implement `composeAsks` and `generateBom`
+- [x] 13. Implement the AI module functions
+  - [x] 13.1 Implement `composeAsks` and `generateBom`
     - `composeAsks(text 1..5000)` → `z.array(Ask).min(1).max(20)` with manual-form fallback carrying extracted fields; `generateBom(experiment 1..2000, groupSize 1..500)` → `BOM` with `bom_failed` fallback; both routed through `run`
     - _Requirements: 8.1, 8.3, 8.4, 8.5, 8.6, 10.1, 10.3, 10.4, 10.5_
 
-  - [ ] 13.2 Implement `writeProtocol`, `handoffSummary`, `normalizeInventory`
+  - [x] 13.2 Implement `writeProtocol`, `handoffSummary`, `normalizeInventory`
     - `writeProtocol(coverage)` → Protocol whose item IDs ⊆ coverage item IDs and that lists every missing BOM line, with `protocol_rejected` fallback and the HS "Advisor must review before running" text; `handoffSummary(events)` → `HandoffSummary` with referencedIds ⊆ input refs and `handoff_fallback` (also used when no events); `normalizeInventory(rows)` → `z.array(InventoryItem)` (hsSafe overwritten later by `computeHsSafe`) with `manual_table` fallback
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 12.1, 12.2, 12.3, 12.4, 12.6, 13.1, 13.6, 13.7; Property 9_
 
-  - [ ]* 13.3 Write unit tests for AI module functions
+  - [x]* 13.3 Write unit tests for AI module functions
     - Mock-provider happy paths for each function produce schema-valid output; protocol lists missing lines and includes the HS review text; handoff with no events returns the fallback; normalizeInventory output has its `hsSafe` overridden by `computeHsSafe`
     - _Requirements: 3.5, 12.3, 12.6, 14.2_
 

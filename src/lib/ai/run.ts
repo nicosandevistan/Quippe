@@ -43,7 +43,7 @@ export interface RunOptions<T, F> {
   /** The prompt to send (built by a `prompts/*.ts` template). */
   prompt: string;
   /** The zod schema the output must satisfy. */
-  schema: z.ZodType<T>;
+  schema: z.ZodType<T, z.ZodTypeDef, unknown>;
   /** The typed fallback returned when validation ultimately fails. */
   fallback: F;
   /**
@@ -67,7 +67,7 @@ export interface RunOptions<T, F> {
 /** Parse + schema-validate one completion; returns the value or an error string. */
 function parseAndValidate<T>(
   text: string,
-  schema: z.ZodType<T>,
+  schema: z.ZodType<T, z.ZodTypeDef, unknown>,
 ): { ok: true; value: T } | { ok: false; error: string } {
   let json: unknown;
   try {
