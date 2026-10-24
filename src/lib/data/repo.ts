@@ -52,8 +52,10 @@ const CityCoordsRow = z.object({
 });
 
 /**
- * The full seed document. Validated once at module load; a malformed seed
- * throws immediately (surfaced by `npm run seed:check`, Req 19.3).
+ * The full seed document. Validated when the store is built: on the first
+ * `getRepo()` call in a process and on every `createRepoFromSeed()` call. A
+ * malformed seed throws at that point (also surfaced by `npm run seed:check`,
+ * Req 19.3).
  */
 export const SeedSchema = z.object({
   accounts: z.array(Account),
@@ -302,16 +304,37 @@ class InMemoryRepo implements Repo {
 
 // --- Singleton -----------------------------------------------------------
 
-let repoInstance: InMemoryRepo | null = null;
+/**
+ * The process-wide repo lives on `globalThis`, not in module scope. Under
+ * `next dev`, this module is inlined into each server entry bundle, and
+ * `NextJsRequireCacheHotReloader` drops those bundles and the webpack runtime
+ * from `require.cache` after every compile, so the module is evaluated many
+ * times in one process. A module-scoped variable would give each evaluation
+ * its own store built from the seed, and writes on one route would be
+ * invisible on others. `globalThis` is shared by every bundle and
+ * re-evaluation in the process. The key is namespaced to avoid clashes.
+ *
+ * The slot is typed as `Repo` rather than `InMemoryRepo` because after a
+ * re-evaluation the stored object is an instance of an earlier evaluation's
+ * class. Trade-off: edits to this file during `next dev` keep the old instance
+ * until the dev server restarts.
+ */
+const GLOBAL_REPO_KEY = "__quippeRepo";
+
+const globalForRepo = globalThis as typeof globalThis & {
+  [GLOBAL_REPO_KEY]?: Repo;
+};
 
 /**
  * Return the process-wide repo, loading and validating the seed on first use.
  */
 export function getRepo(): Repo {
-  if (repoInstance === null) {
-    repoInstance = new InMemoryRepo(loadStore());
+  let repo = globalForRepo[GLOBAL_REPO_KEY];
+  if (repo === undefined) {
+    repo = new InMemoryRepo(loadStore());
+    globalForRepo[GLOBAL_REPO_KEY] = repo;
   }
-  return repoInstance;
+  return repo;
 }
 
 /**

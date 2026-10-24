@@ -1,0 +1,161 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration test": {
+      "status": "passed",
+      "failingExample": "On unfixed code all 4 tests fail, confirming the bug. (1) getRepo() identity: B.getRepo() is a different InMemoryRepo object than A.getRepo() (Object.is fails, \"serializes to the same string\"). (2) Ask saved via A.getRepo().saveAsk is not visible: B.getRepo().getAsk(id) returned null. (3) fast-check counterexample: [[{\"kind\":\"saveAsk\",\"n\":1}]] (seed -1938657147, path 0:0:0:0): expect(repoB).toBe(repoA) fails. (4) Route-level: after POST /api/asks/confirm in graph A (3 asks, 201), GET /api/org/org-liss in graph B has kind:\"ask\" event refs only ['org-liss','co-harborview'] (seed events) and is missing 'ask-aa6a2ca5-1049-4187-be81-68d64b063…'.",
+      "lastRunTimestamp": 1792872348016
+    },
+    "2. Write preservation property tests (BEFORE implementing fix)": {
+      "status": "passed",
+      "lastRunTimestamp": 1792872439519
+    },
+    "3.2 Verify bug condition exploration test now passes": {
+      "status": "passed",
+      "lastRunTimestamp": 1792872523398
+    },
+    "3.3 Verify preservation tests still pass": {
+      "status": "passed",
+      "lastRunTimestamp": 1792872547594
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872236961
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872241470
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872361155
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237021
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872364319
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872454778
+      }
+    ],
+    "3.1 Implement the fix": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237053
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872457533
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872499633
+      }
+    ],
+    "3.2 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237085
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872501999
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872530157
+      }
+    ],
+    "3.3 Verify preservation tests still pass": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237116
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872532606
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872553972
+      }
+    ],
+    "4. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237171
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872557100
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872596901
+      }
+    ],
+    "5. Add a docs/kiro-log.md entry": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237201
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872599366
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872691317
+      }
+    ],
+    "6. Commit and push to main": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872237231
+      },
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872693759
+      }
+    ],
+    "3. Fix for repository store not shared across routes and re-evaluations": [
+      {
+        "executionId": "aeaef522-bb8b-4de8-8214-a16bb05f2b5b",
+        "chatSessionId": "sess_df23cb1d-e42f-456d-8482-4ea60f1db409",
+        "timestamp": 1792872554010
+      }
+    ]
+  }
+}
