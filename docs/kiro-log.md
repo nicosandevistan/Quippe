@@ -56,3 +56,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Renamed the app from "Open Bench" to "Quippe" across the codebase: README, PROJECT_BRIEF, .env.example, steering docs, spec document text, code comments, UI strings (layout.tsx, page.tsx), test descriptions, and the package name. Deliberately left the spec folder `.kiro/specs/open-bench-mvp` and its `Feature: open-bench-mvp` property-test tags unchanged so the Kiro spec keeps working.
 - **What happened (good or bad):** Clean rename. Refreshed package-lock.json via npm install; npm run lint and npm test stayed green (107 tests). Committed as "Rename app to Quippe", pushed to main, and merged main into the core branch to keep it in sync.
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution (Start task) + environment setup
+- **What we did:** Pulled main, branched `feat/ai-layer-provider`, installed Node 24 LTS (winget), ran `npm install` once, and continued the spec from the next unchecked task. Tasks 1–9 (deterministic core, 107 tests) were already on main; the next open work was Task 10 (data layer).
+- **What happened (good or bad):** Implemented Task 10 end to end: the in-memory `Repo` (`src/lib/data/repo.ts`) matching the design interface with `listInventory` applying the expired-item filter on every read; `seed.json` with all-fictional data (3 companies in Boston/Cambridge/Worcester, 4 orgs incl. a HS club with advisor and the college club with 6 past timeline events, 3 ERGs, 9 offers, 27 inventory items with 6 hazardous + 2 expired, a 15-city MA coordinate table, one account per role); and a `seed:check` validator (`scripts/seed-check.ts`) that schema-validates the seed, checks referential integrity, and asserts the required demo fixtures. Added 12 repo/seed unit tests. `npm run seed:check`, `npm run lint`, and `npm test` all green (119 tests). One gotcha logged: zod `.optional()` rejects JSON `null`, so non-HS orgs omit `advisorAccountId` entirely.
+- **Screenshot:**
