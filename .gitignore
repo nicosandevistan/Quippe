@@ -3,7 +3,7 @@ node_modules/
 .next/
 out/
 dist/
-coverage/
+/coverage/
 *.tsbuildinfo
 
 # Environment files (commit .env.example only)
