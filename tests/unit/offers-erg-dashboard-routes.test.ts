@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-import { POST as createOffer } from "@/app/api/offers/route";
+import { GET as listOffers, POST as createOffer } from "@/app/api/offers/route";
 import { PUT as editOffer } from "@/app/api/offers/[id]/route";
 import { POST as createErg } from "@/app/api/ergs/route";
 import { GET as getDashboard } from "@/app/api/company/[id]/dashboard/route";
@@ -395,6 +395,45 @@ describe("GET /api/company/[id]/dashboard", () => {
     expect(body.matches).toEqual([]);
   });
 
+  it("includes the ask, org name, and best offer on each entry (Task 26.1)", async () => {
+    const res = await getDashboard(
+      reqAs(LIAISON, `http://test/api/company/${HARBORVIEW}/dashboard`),
+      { params: { id: HARBORVIEW } },
+    );
+    const body = await res.json();
+    // The seeded ask-liss-tour (20 people, 2027-02-10, Boston) fits off-hv-tour.
+    const entry = body.matches.find(
+      (m: { askId: string }) => m.askId === "ask-liss-tour",
+    );
+    expect(entry).toBeDefined();
+    expect(entry.ask).toEqual({
+      id: "ask-liss-tour",
+      type: "lab_tour",
+      topic: "molecular biology lab tour",
+      groupSize: 20,
+      deliveryMode: "in_person",
+      preferredDates: ["2027-02-10"],
+      status: "matched",
+    });
+    expect(entry.orgName).toBe("Latinos in STEM Society");
+    expect(entry.offer.id).toBe(entry.offerId);
+    expect(entry.offer.type).toBe("lab_tour");
+    expect(typeof entry.offer.notes).toBe("string");
+  });
+
+  it("lets the company's ERG lead view its own dashboard, but not another company's (Task 26.1)", async () => {
+    const own = await getDashboard(
+      reqAs("acc-erglead", `http://test/api/company/${HARBORVIEW}/dashboard`),
+      { params: { id: HARBORVIEW } },
+    );
+    expect(own.status).toBe(200);
+    const other = await getDashboard(
+      reqAs("acc-erglead", `http://test/api/company/${GRANITE}/dashboard`),
+      { params: { id: GRANITE } },
+    );
+    expect(other.status).toBe(403);
+  });
+
   it("denies a liaison hitting another company's dashboard (403)", async () => {
     // acc-liaison is bound to co-harborview; requesting co-granite's dashboard
     // is an ownership violation.
@@ -405,5 +444,41 @@ describe("GET /api/company/[id]/dashboard", () => {
     expect(res.status).toBe(403);
     const body = await res.json();
     expect(String(body.error)).toMatch(/another|not authorized|unchanged/i);
+  });
+});
+
+// --- GET /api/offers (Task 26.1) -----------------------------------------
+
+describe("GET /api/offers", () => {
+  it("returns the liaison's own company, only its offers, and hasErg", async () => {
+    const res = await listOffers(reqAs(LIAISON, "http://test/api/offers"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.company).toEqual({
+      id: "co-harborview",
+      name: "Harborview Therapeutics",
+      city: "Boston",
+    });
+    expect(body.offers.length).toBeGreaterThan(0);
+    for (const o of body.offers as Array<{ companyId: string }>) {
+      expect(o.companyId).toBe("co-harborview");
+    }
+    expect(body.hasErg).toBe(true);
+  });
+
+  it("serves the ERG lead too, and reports hasErg false for a company without an ERG", async () => {
+    const erg = await listOffers(reqAs("acc-erglead", "http://test/api/offers"));
+    expect(erg.status).toBe(200);
+    const acct = spyLiaisonFor(GRANITE, "acc-liaison-granite-offers");
+    const res = await listOffers(reqAs(acct, "http://test/api/offers"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.company.id).toBe("co-granite");
+    expect(body.hasErg).toBe(false);
+  });
+
+  it("denies a club officer (403)", async () => {
+    const res = await listOffers(reqAs("acc-officer", "http://test/api/offers"));
+    expect(res.status).toBe(403);
   });
 });

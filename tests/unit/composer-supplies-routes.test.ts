@@ -7,6 +7,7 @@ import { POST as bomRoute } from "@/app/api/supplies/bom/route";
 import { POST as coverageRoute } from "@/app/api/supplies/coverage/route";
 import { POST as protocolRoute } from "@/app/api/supplies/protocol/route";
 import { SESSION_COOKIE } from "@/app/api/_lib/session";
+import { mockProvider } from "@/lib/ai/provider";
 import { getRepo } from "@/lib/data/repo";
 import type {
   Account,
@@ -32,9 +33,11 @@ import type {
  *   - restore all spies after every test.
  *
  * The AI module runs against its MOCK provider by default (offline, no
- * network, no secret), returning schema-valid canned output: composeAsks → one
- * draft ask, generateBom → a 2-line BOM, writeProtocol → a protocol echoing
- * only the in-scope item ids and the missing-line ids the prompt declared.
+ * network, no secret), returning schema-valid canned output that follows the
+ * demo script (Task 26.1): composeAsks → three draft asks (supplies, lab tour,
+ * ERG meetup), generateBom → a 10-line gel electrophoresis BOM, writeProtocol →
+ * a protocol echoing only the in-scope item ids and the missing-line ids the
+ * prompt declared.
  *
  * Real seed ids used (src/lib/data/seed.json):
  *   - acc-officer   club_officer bound to org-liss (college_club, NOT HS)
@@ -45,7 +48,11 @@ import type {
  *                   hs_safe coverage filtering)
  * Hazardous (hsSafe === false) seed item ids — must NEVER appear in an HS
  * org's coverage itemRefs: inv-hv-etbr, inv-hv-phenol, inv-tp-acrylamide,
- * inv-tp-methanol, inv-gr-bleach.
+ * inv-tp-methanol, inv-gr-bleach, inv-hv-ethanol (the last was corrected to
+ * hsSafe false in Task 26.1 to agree with its "flammable" hazard class).
+ *
+ * The seeded advisor (acc-advisor, org-hsbio) may run the supplies flow for
+ * their own club (Task 26.1), so the HS demo cases use that real account.
  */
 
 // --- Request helper ------------------------------------------------------
@@ -79,7 +86,11 @@ const HAZARDOUS_ITEM_IDS = [
   "inv-tp-acrylamide",
   "inv-tp-methanol",
   "inv-gr-bleach",
+  "inv-hv-ethanol",
 ];
+
+const ADVISOR = "acc-advisor"; // club_advisor @ org-hsbio (high_school_club)
+const MEMBER = "acc-member"; // club_member @ org-liss (read-only)
 
 /**
  * Mint a synthetic club_officer bound to `orgId` by spying on the singleton
@@ -158,7 +169,12 @@ describe("POST /api/asks/compose", () => {
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(Array.isArray(body.drafts)).toBe(true);
-    expect(body.drafts.length).toBeGreaterThanOrEqual(1); // mock yields ≥1 draft
+    // The mock follows the demo script: supplies, lab tour, ERG meetup.
+    expect(body.drafts.map((d: Ask) => d.type)).toEqual([
+      "supplies",
+      "lab_tour",
+      "erg_event",
+    ]);
 
     // NOTHING persisted: compose only drafts for review (Req 8.8).
     const after = (await getRepo().listAsks({ orgId: ORG_LISS })).length;
@@ -183,10 +199,14 @@ describe("POST /api/asks/confirm", () => {
     expect(after).toBe(before); // nothing submitted
   });
 
-  it("saves a confirmed college-org ask as status `open` and persists it (Req 8.8, 9.1)", async () => {
+  it("saves a confirmed college-org ask that an offer fits as `matched` and persists it (Req 8.8, 9.1; Task 26.1)", async () => {
+    // Task 26.1 fix 1 changed this case: a visible ask's status now comes from
+    // the matching core. This lab_tour (10 people, 2027-02-10, in person,
+    // Boston) fits off-hv-tour, so it is saved as `matched` (it used to be
+    // `open`, which accept/decline could never act on).
     // A unique topic lets us find exactly the ask this case saved in the shared
     // store, independent of any seeded or previously-saved asks.
-    const topic = `confirm-open-${crypto.randomUUID()}`;
+    const topic = `confirm-matched-${crypto.randomUUID()}`;
     const res = await confirmRoute(
       reqAs(OFFICER, "http://test/api/asks/confirm", {
         asks: [confirmedAskInput({ topic })],
@@ -197,15 +217,58 @@ describe("POST /api/asks/confirm", () => {
     expect(body.ok).toBe(true);
     expect(body.asks.length).toBe(1);
     const saved: Ask = body.asks[0];
-    // Non-HS org ⇒ the gate opens the ask (Req 9.1).
-    expect(saved.status).toBe("open");
+    // Non-HS org ⇒ not held by the gate; an offer fits ⇒ matched.
+    expect(saved.status).toBe("matched");
     expect(saved.orgId).toBe(ORG_LISS);
     expect(saved.id.length).toBeGreaterThan(0); // server-minted id
 
     // Persisted: a follow-up read finds the saved ask.
     const found = await getRepo().getAsk(saved.id);
-    expect(found?.status).toBe("open");
+    expect(found?.status).toBe("matched");
     expect(found?.topic).toBe(topic);
+  });
+
+  it("saves a confirmed college-org ask that no offer fits as `open` (Req 9.1)", async () => {
+    // No seeded offer is available on 2031-01-01, so nothing survives the
+    // hard filters and the ask stays `open`.
+    const topic = `confirm-open-${crypto.randomUUID()}`;
+    const res = await confirmRoute(
+      reqAs(OFFICER, "http://test/api/asks/confirm", {
+        asks: [confirmedAskInput({ topic, preferredDates: ["2031-01-01"] })],
+      }),
+    );
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.asks[0].status).toBe("open");
+  });
+
+  it("writes one plain-language org timeline event per confirmed ask (Task 26.1)", async () => {
+    const topicA = `timeline-a-${crypto.randomUUID()}`;
+    const topicB = `timeline-b-${crypto.randomUUID()}`;
+    const res = await confirmRoute(
+      reqAs(OFFICER, "http://test/api/asks/confirm", {
+        asks: [
+          confirmedAskInput({ topic: topicA }),
+          confirmedAskInput({ topic: topicB }),
+        ],
+      }),
+    );
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    const events = await getRepo().listTimelineEvents(ORG_LISS);
+    for (const [i, topic] of [topicA, topicB].entries()) {
+      const askId: string = body.asks[i].id;
+      const mine = events.filter((e) => e.refs.includes(askId));
+      expect(mine.length).toBe(1);
+      expect(mine[0].kind).toBe("ask");
+      expect(mine[0].summary).toBe(`Asked for: ${topic}`);
+      expect(mine[0].id.startsWith("ev-")).toBe(true);
+    }
+    // Same-day events get distinct seq values so their order is stable.
+    const seqs = events
+      .filter((e) => body.asks.some((a: Ask) => e.refs.includes(a.id)))
+      .map((e) => e.seq);
+    expect(new Set(seqs).size).toBe(2);
   });
 
   it("holds an in-person HIGH-SCHOOL ask at pending_advisor_approval (Req 9.1)", async () => {
@@ -285,7 +348,19 @@ describe("POST /api/supplies/bom", () => {
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(Array.isArray(body.bom.lines)).toBe(true);
-    expect(body.bom.lines.length).toBeGreaterThanOrEqual(1); // mock 2-line BOM
+    expect(body.bom.lines.length).toBe(10); // demo-script mock BOM
+  });
+
+  it("lets the club advisor draft a BOM for their own club, but not a club member (Task 26.1)", async () => {
+    const input = { experiment: "gel electrophoresis of PCR products", groupSize: 18 };
+    const advisorRes = await bomRoute(
+      reqAs(ADVISOR, "http://test/api/supplies/bom", input),
+    );
+    expect(advisorRes.status).toBe(200);
+    const memberRes = await bomRoute(
+      reqAs(MEMBER, "http://test/api/supplies/bom", input),
+    );
+    expect(memberRes.status).toBe(403);
   });
 });
 
@@ -328,6 +403,63 @@ function classifyingBom(): BOM {
     ],
   };
 }
+
+/** The demo-script BOM exactly as the mock provider drafts it. */
+async function mockBom(): Promise<BOM> {
+  const res = await bomRoute(
+    reqAs(OFFICER, "http://test/api/supplies/bom", {
+      experiment: "DNA extraction and gel electrophoresis workshop",
+      groupSize: 25,
+    }),
+  );
+  const body = await res.json();
+  return body.bom as BOM;
+}
+
+describe("POST /api/supplies/coverage (demo-script BOM, Task 26.1)", () => {
+  it("covers 8 lines across Harborview and Tidepool and leaves detergent + enzyme missing for the college club", async () => {
+    const res = await coverageRoute(
+      reqAs(OFFICER, "http://test/api/supplies/coverage", await mockBom()),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    const coverage: CoverageReport = body.coverage;
+    const covered = coverage.lines.filter((l) => l.status === "covered");
+    const missing = coverage.lines.filter((l) => l.status === "missing");
+    expect(covered.length).toBe(8);
+    expect(missing.map((l) => l.bomLineId)).toEqual(["bom-mock-9", "bom-mock-10"]);
+    expect(new Set(covered.map((l) => l.supplyingCompanyId))).toEqual(
+      new Set(["co-harborview", "co-tidepool"]),
+    );
+    // Name matching (Req 11): the P1000 tips line uses the P1000 tips item.
+    const tips = coverage.lines.find((l) => l.bomLineId === "bom-mock-5");
+    expect(tips?.itemRefs).toEqual(["inv-tp-tips"]);
+  });
+
+  it("also leaves the ethidium bromide line missing for the high school club, with no hazardous item anywhere (advisor session)", async () => {
+    const res = await coverageRoute(
+      reqAs(ADVISOR, "http://test/api/supplies/coverage", await mockBom()),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    const coverage: CoverageReport = body.coverage;
+    expect(coverage.lines.filter((l) => l.status === "covered").length).toBe(7);
+    expect(
+      coverage.lines.filter((l) => l.status === "missing").map((l) => l.bomLineId),
+    ).toEqual(["bom-mock-8", "bom-mock-9", "bom-mock-10"]);
+    const allRefs = coverage.lines.flatMap((l) => l.itemRefs as string[]);
+    for (const hazardousId of HAZARDOUS_ITEM_IDS) {
+      expect(allRefs).not.toContain(hazardousId);
+    }
+  });
+
+  it("denies a club member (403)", async () => {
+    const res = await coverageRoute(
+      reqAs(MEMBER, "http://test/api/supplies/coverage", await mockBom()),
+    );
+    expect(res.status).toBe(403);
+  });
+});
 
 describe("POST /api/supplies/coverage", () => {
   it("classifies each BOM line covered/partial/missing for a college org (Req 11.2)", async () => {
@@ -443,6 +575,40 @@ describe("POST /api/supplies/protocol", () => {
     expect(body.ok).toBe(true);
     expect(body.protocol.hsReviewRequired).toBe(true);
     expect(String(body.protocol.hsReviewText)).toMatch(/advisor/i);
+  });
+
+  it("forces the HS review flag and text even when the model omits them (Req 12.6; Task 26.1)", async () => {
+    // Stub the model boundary: a schema-valid, in-scope protocol that lists
+    // the missing line but DROPS the advisor-review flag and text.
+    vi.spyOn(mockProvider, "complete").mockResolvedValue(
+      JSON.stringify({
+        title: "Adapted protocol",
+        steps: ["Gather the matched materials."],
+        missingLineIds: ["bom-miss"],
+        itemRefs: ["inv-hv-agarose"],
+        hsReviewRequired: false,
+        hsReviewText: "",
+      }),
+    );
+    const res = await protocolRoute(
+      reqAs(ADVISOR, "http://test/api/supplies/protocol", {
+        coverage: coverageWithMissing(),
+      }),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.ok).toBe(true);
+    expect(body.protocol.hsReviewRequired).toBe(true);
+    expect(body.protocol.hsReviewText).toBe("Advisor must review before running");
+  });
+
+  it("denies a club member (403)", async () => {
+    const res = await protocolRoute(
+      reqAs(MEMBER, "http://test/api/supplies/protocol", {
+        coverage: coverageWithMissing(),
+      }),
+    );
+    expect(res.status).toBe(403);
   });
 
   it("rejects an invalid coverage report body with 400 (Req 12.1)", async () => {

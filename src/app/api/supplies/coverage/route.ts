@@ -30,9 +30,9 @@ import { requireRole } from "../../_lib/guard";
  * `hsSafe === false`, so no unsafe item id can appear in any coverage line's
  * `itemRefs`. Non-HS orgs keep otherwise-eligible items.
  *
- * Authorization (Req 10/12): the supplies flow is a Club_Officer action; the
- * officer runs coverage for their OWN org (the session's org drives hs_safe
- * filtering).
+ * Authorization (Req 10/12): the supplies flow is a Club_Officer action, also
+ * open to the club's Club_Advisor (Task 26.1); either runs coverage for their
+ * OWN org (the session's org drives hs_safe filtering).
  *
  * Input validation: the submitted BOM is validated with the `BOM` schema; an
  * invalid BOM returns 400 with the field errors.
@@ -48,9 +48,19 @@ import { requireRole } from "../../_lib/guard";
  * clock + cross-company inventory + requesting org, delegate to the pure core.
  */
 
+/**
+ * Roles that may run the supplies flow for their OWN org (the org comes from
+ * the session). A club officer plans supplies; a club advisor may run it for
+ * their club too (Task 26.1, demo step 6: the high school club has no officer
+ * account, so its advisor shows that hazardous items never appear in the
+ * club's supply list). Members stay read-only and company roles are denied.
+ */
+const SUPPLIES_ROLES = ["club_officer", "club_advisor"] as const;
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // Authorize: only a club officer runs coverage for their org (Req 10/12, 1.4).
-  const auth = await requireRole(req, "club_officer");
+  // Authorize: a club officer or advisor runs coverage for their org
+  // (Req 10/12, 1.4).
+  const auth = await requireRole(req, SUPPLIES_ROLES);
   if (!auth.ok) return auth.response;
   const { session } = auth;
 

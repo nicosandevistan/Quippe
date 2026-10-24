@@ -1,46 +1,45 @@
+import { GET as advisorQueueRoute } from "@/app/api/advisor/queue/route";
 import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
-import { getRepo } from "@/lib/data/repo";
-import type { OrgId } from "@/lib/schemas";
-
+import { navLinksFor } from "@/components/nav-links";
+import type { Ask } from "@/lib/schemas";
+import { apiErrorText, callApi } from "../_lib/call-api";
 import { getCurrentAccount } from "../session";
-import { AdvisorQueueRow, type QueueAsk } from "./AdvisorQueueRow";
+import { approveAskAction, rejectAskAction } from "./actions";
+import { AdvisorQueue, type QueueAsk } from "./AdvisorQueueRow";
 
 /**
- * Advisor approval queue (Task 25.2; Req 9.3, 9.5, 9.6).
+ * Advisor approval queue (Task 25.2, rewired in Task 26.1; Req 9.3, 9.5,
+ * 9.6).
  *
- * Lists ONLY this advisor's org asks in `pending_advisor_approval`. Approve
- * sets the ask to `open`; reject sets it to `rejected`. Both go through the
- * advisor actions, which re-check org ownership.
- *
- * TODO(api): read the queue from `GET /api/advisor/queue` once Task 18.2 lands;
- * today it reads the repo on the server, scoped to the advisor's org.
+ * The queue comes from `GET /api/advisor/queue`, which returns only this
+ * advisor's club's requests that are waiting for approval. Approve and Reject
+ * go through `POST /api/asks/[id]/approve|reject`, which re-check the role and
+ * that the request belongs to the advisor's club.
  */
-
 export default async function AdvisorPage() {
   const account = await getCurrentAccount();
+  const nav = navLinksFor(account);
 
-  if (!account || account.role !== "club_advisor" || !account.orgId) {
+  const res = await callApi<{ asks: Ask[]; empty: boolean }>(advisorQueueRoute, {
+    path: "/api/advisor/queue",
+  });
+
+  if (res.status === 401 || res.status === 403) {
     return (
-      <PageShell role={account?.role}>
+      <PageShell role={account?.role} navLinks={nav}>
         <h1 className="text-2xl font-semibold">Approval queue</h1>
         <div className="mt-4">
           <EmptyState
             title="Advisors only"
-            message="Sign in as a club advisor to see requests awaiting approval."
+            message="Sign in as a club advisor to see requests waiting for approval."
           />
         </div>
       </PageShell>
     );
   }
 
-  const repo = getRepo();
-  const pending = await repo.listAsks({
-    orgId: account.orgId as OrgId,
-    status: "pending_advisor_approval",
-  });
-
-  const rows: QueueAsk[] = pending.map((a) => ({
+  const rows: QueueAsk[] = (res.json?.asks ?? []).map((a) => ({
     id: a.id,
     topic: a.topic,
     groupSize: a.groupSize,
@@ -49,25 +48,22 @@ export default async function AdvisorPage() {
   }));
 
   return (
-    <PageShell role={account.role}>
+    <PageShell role={account?.role} navLinks={nav}>
       <h1 className="text-2xl font-semibold">Approval queue</h1>
       <p className="mt-1 text-gray-700">
         In-person requests from your club need your approval before any company
         can see them.
       </p>
-
       <div className="mt-6">
-        {rows.length === 0 ? (
-          <EmptyState
-            title="Nothing to approve"
-            message="There are no requests waiting for your approval right now."
+        {res.ok ? (
+          <AdvisorQueue
+            asks={rows}
+            actions={{ approve: approveAskAction, reject: rejectAskAction }}
           />
         ) : (
-          <ul className="space-y-3">
-            {rows.map((ask) => (
-              <AdvisorQueueRow key={ask.id} ask={ask} />
-            ))}
-          </ul>
+          <p role="alert" className="text-sm text-red-700">
+            {apiErrorText(res.json, "The approval queue couldn't be loaded.")}
+          </p>
         )}
       </div>
     </PageShell>

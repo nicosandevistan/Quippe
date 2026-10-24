@@ -4,22 +4,34 @@ import { useState } from "react";
 
 import { FormField } from "@/components/FormField";
 
-import { createOfferAction, type OfferResult } from "./actions";
+import type { OfferResult } from "./company-types";
 
 /**
- * Create-offer form (Task 25.1; Req 4.1, 4.2, 4.6, 7.4). Client component so
- * per-field validation errors from the server action render against their
- * fields. `hasErg` disables the erg_event option when the company has no ERG,
- * reinforcing the server-side gate (Req 7.4).
+ * Create-offer form (Task 25.1, rewired in Task 26.1; Req 4.1, 4.2, 4.6,
+ * 7.4). The server action posts to `POST /api/offers`; the route's per-field
+ * errors render against their fields. `hasErg` (from `GET /api/offers`)
+ * disables the ERG event option when the company has no ERG; the route
+ * enforces the same gate.
+ *
+ * The server action arrives as a prop from the server page instead of being
+ * imported here. Next bundles actions imported by client components into a
+ * separate server layer with its own copy of the in-memory repo, so writes
+ * made there would not show up on the pages or API routes.
  */
-export function OfferForm({ hasErg }: { hasErg: boolean }) {
+export function OfferForm({
+  hasErg,
+  createOffer,
+}: {
+  hasErg: boolean;
+  createOffer: (formData: FormData) => Promise<OfferResult>;
+}) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   async function onSubmit(formData: FormData) {
     setMessage(null);
-    const res: OfferResult = await createOfferAction(formData);
+    const res: OfferResult = await createOffer(formData);
     if (res.ok) {
       setErrors({});
       setDone(true);

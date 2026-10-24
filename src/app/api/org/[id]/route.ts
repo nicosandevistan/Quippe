@@ -5,6 +5,7 @@ import { sortTimeline } from "@/lib/core/timeline";
 import { getRepo } from "@/lib/data/repo";
 import type { Organization, OrgId, Role, TimelineEvent } from "@/lib/schemas";
 
+import { isCompanyCopyEvent } from "../../_lib/accept-decline";
 import { requireRole } from "../../_lib/guard";
 
 /**
@@ -72,7 +73,14 @@ export async function GET(
   }
 
   // Timeline, ordered by the pure core: date desc, then seq asc (Req 2.2, 2.4).
-  const events: TimelineEvent[] = await repo.listTimelineEvents(orgId);
+  //
+  // Accept/decline write two copies of each outcome (Req 6.4, 6.5): one in the
+  // org's voice and one in the company's voice. Both carry the orgId, so the
+  // company copy (id prefix `ev-co-`) is dropped here; otherwise the org page
+  // would show every accept/decline twice (Task 26.1).
+  const events: TimelineEvent[] = (await repo.listTimelineEvents(orgId)).filter(
+    (e) => !isCompanyCopyEvent(e),
+  );
   const timeline = sortTimeline(events);
 
   // Empty-timeline indicator (Req 2.5): the array is returned regardless, and

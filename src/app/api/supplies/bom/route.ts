@@ -14,8 +14,8 @@ import { requireRole } from "../../_lib/guard";
  * up, so this handler only needs to surface the typed result (Req 10.3–10.5).
  *
  * Authorization (Req 10): drafting a BOM is a Club_Officer action — it is the
- * officer's supplies planning flow. Members are read-only and advisors approve
- * asks, so neither may generate a BOM.
+ * officer's supplies planning flow. A Club_Advisor may also run it for their
+ * own club (Task 26.1). Members are read-only, so they may not generate a BOM.
  *
  * Input validation (Req 10.2): the experiment must be 1..2000 characters and the
  * group size an integer 1..500. On invalid input the handler rejects with 400
@@ -32,6 +32,15 @@ import { requireRole } from "../../_lib/guard";
  * to the AI module, surface its typed result.
  */
 
+/**
+ * Roles that may run the supplies flow for their OWN org (the org comes from
+ * the session). A club officer plans supplies; a club advisor may run it for
+ * their club too (Task 26.1, demo step 6: the high school club has no officer
+ * account, so its advisor shows that hazardous items never appear in the
+ * club's supply list). Members stay read-only and company roles are denied.
+ */
+const SUPPLIES_ROLES = ["club_officer", "club_advisor"] as const;
+
 const EXPERIMENT_MIN = 1;
 const EXPERIMENT_MAX = 2000;
 const GROUP_SIZE_MIN = 1;
@@ -43,8 +52,8 @@ interface FieldErrors {
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // Authorize: only a club officer drafts a BOM (Req 10, 1.4).
-  const auth = await requireRole(req, "club_officer");
+  // Authorize: a club officer or club advisor drafts a BOM (Req 10, 1.4).
+  const auth = await requireRole(req, SUPPLIES_ROLES);
   if (!auth.ok) return auth.response;
 
   // Parse the JSON body.

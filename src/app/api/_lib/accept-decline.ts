@@ -47,9 +47,26 @@ export function isAcceptable(ask: Ask): boolean {
   return ask.status === "matched";
 }
 
-/** Mint a server-owned, namespaced TimelineEvent id. */
-function newEventId(): EventId {
-  return `ev-${crypto.randomUUID()}` as EventId;
+/**
+ * Id prefixes for the two copies of an accept/decline outcome (Task 26.1).
+ *
+ * Both copies carry the orgId (and companyId), so a plain org-timeline query
+ * returns BOTH and the org page showed every outcome twice, once in the
+ * company's voice. The prefix marks which copy is which so the org page can
+ * hide the company copy (see `isCompanyCopyEvent`). The dual write itself is
+ * kept (Req 6.4, 6.5).
+ */
+export const ORG_COPY_EVENT_PREFIX = "ev-org-";
+export const COMPANY_COPY_EVENT_PREFIX = "ev-co-";
+
+/** True for the company-voice copy of an accept/decline event. */
+export function isCompanyCopyEvent(e: Pick<TimelineEvent, "id">): boolean {
+  return e.id.startsWith(COMPANY_COPY_EVENT_PREFIX);
+}
+
+/** Mint a server-owned, namespaced TimelineEvent id with the given prefix. */
+function newEventId(prefix: string): EventId {
+  return `${prefix}${crypto.randomUUID()}` as EventId;
 }
 
 /**
@@ -70,6 +87,14 @@ function newEventId(): EventId {
  * the new group is always counted against capacity even when prior commitments
  * are unknown, so the invariant `sum ≤ capacity` can never be under-counted in
  * a way that over-admits the NEW accept.
+ *
+ * Each accepted ask is counted ONCE (Task 26.1). Every accept writes two
+ * events that both carry the orgId (the org copy and the company copy, see
+ * `buildDualTimelineEvents`), so a plain org-timeline scan sees each commit
+ * twice. Counting both double-booked the offer: on off-hv-tour (capacity 30) a
+ * 25-person accept used up 50 seats and a later 5-person ask was refused. The
+ * company copy is skipped, and the committed ask ids are deduped so any other
+ * repeat of the same accept also counts once.
  */
 export async function acceptedGroupSizesForOffer(
   repo: Repo,
@@ -83,17 +108,23 @@ export async function acceptedGroupSizesForOffer(
   // Accepted timeline events that reference this offer record a prior commit
   // against it. Scan every org's accepted events via the org ids they carry.
   const orgIds = new Set<string>(acceptedAsks.map((a) => a.orgId));
+  const counted = new Set<string>();
   const sizes: number[] = [];
   for (const orgId of orgIds) {
     const events = await repo.listTimelineEvents(orgId as Organization["id"]);
     for (const e of events) {
       if (e.kind !== "accepted") continue;
+      if (isCompanyCopyEvent(e)) continue;
       if (!e.refs.includes(offerId)) continue;
       // Resolve the committed ask from the same event's refs.
       const committedAskId = e.refs.find((ref) => askById.has(ref));
       if (committedAskId === undefined) continue;
+      if (counted.has(committedAskId)) continue;
       const committed = askById.get(committedAskId);
-      if (committed !== undefined) sizes.push(committed.groupSize);
+      if (committed !== undefined) {
+        counted.add(committedAskId);
+        sizes.push(committed.groupSize);
+      }
     }
   }
   return sizes;
@@ -127,7 +158,7 @@ export function buildDualTimelineEvents(args: {
   const verb = args.kind === "accepted" ? "accepted" : "declined";
 
   const orgEvent: TimelineEvent = {
-    id: newEventId(),
+    id: newEventId(ORG_COPY_EVENT_PREFIX),
     orgId: args.orgId,
     companyId: args.companyId,
     kind: args.kind,
@@ -138,7 +169,7 @@ export function buildDualTimelineEvents(args: {
   };
 
   const companyEvent: TimelineEvent = {
-    id: newEventId(),
+    id: newEventId(COMPANY_COPY_EVENT_PREFIX),
     orgId: args.orgId,
     companyId: args.companyId,
     kind: args.kind,

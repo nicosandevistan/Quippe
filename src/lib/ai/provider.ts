@@ -63,6 +63,15 @@ function extractQuoted(prompt: string, before: string): string | null {
   return m ? m[1] : null;
 }
 
+/**
+ * Canned composer output that follows the demo script (PROJECT_BRIEF.md
+ * section 10, step 3; Task 26.1 approved fix 3): the officer's message splits
+ * into a supplies ask, a lab tour ask, and an ERG meetup ask for a 25-person
+ * club. Dates line up with the seeded Harborview offers so the matching core
+ * (not this mock) can find them. The orgId is echoed from the prompt so every
+ * ask stays in scope; status is always "draft" (the server decides the real
+ * status on confirm).
+ */
 function mockComposeAsks(prompt: string): string {
   const orgId = extractQuoted(prompt, "belongs to organization id") ?? "org-1";
   return JSON.stringify([
@@ -70,36 +79,73 @@ function mockComposeAsks(prompt: string): string {
       id: "ask-mock-1",
       orgId,
       type: "supplies",
-      groupSize: 20,
+      groupSize: 25,
       preferredDates: ["2027-02-01"],
       deliveryMode: "in_person",
-      topic: "workshop supplies",
+      topic: "DNA extraction and gel electrophoresis workshop supplies",
       needsSupplies: true,
+      status: "draft",
+    },
+    {
+      id: "ask-mock-2",
+      orgId,
+      type: "lab_tour",
+      groupSize: 25,
+      preferredDates: ["2027-02-10"],
+      deliveryMode: "in_person",
+      topic: "Visit a working biotech lab",
+      needsSupplies: false,
+      status: "draft",
+    },
+    {
+      id: "ask-mock-3",
+      orgId,
+      type: "erg_event",
+      groupSize: 25,
+      preferredDates: ["2027-02-20"],
+      deliveryMode: "in_person",
+      topic: "Meet Latino and first-generation professionals in industry",
+      needsSupplies: false,
       status: "draft",
     },
   ]);
 }
 
+/** One canned BOM line: [item, category, quantity, unit, purpose]. */
+type MockBomRow = [string, string, number, string, string];
+
+/**
+ * Canned BOM for a DNA extraction + gel electrophoresis workshop (demo step 4;
+ * Task 26.1 approved fix 3). Against the seed inventory the deterministic
+ * coverage core marks 8 lines covered across Harborview and Tidepool and 2
+ * missing (dish soap: no detergent in stock; meat tenderizer: the only enzyme
+ * in stock is expired). For a high school club the ethidium bromide line is
+ * also missing, because every stain in stock is hs-unsafe. Those outcomes come
+ * from the core; this mock only supplies the list.
+ */
+const MOCK_BOM_ROWS: readonly MockBomRow[] = [
+  ["Agarose powder", "reagent", 15, "g", "cast gels"],
+  ["TBE buffer 10x", "buffer", 2, "L", "running buffer"],
+  ["1 kb DNA ladder", "reagent", 100, "uL", "size reference"],
+  ["Gel loading dye", "reagent", 2, "mL", "load samples"],
+  ["P1000 pipette tips", "plasticware", 300, "unit", "liquid handling"],
+  ["0.2 mL PCR tubes", "plasticware", 50, "unit", "hold samples"],
+  ["Nitrile gloves", "ppe", 50, "unit", "hand protection"],
+  ["Ethidium bromide DNA stain", "stain", 1, "mL", "see DNA bands"],
+  ["Dish soap", "detergent", 50, "mL", "break open cells"],
+  ["Meat tenderizer (protease)", "enzyme", 5, "g", "remove proteins"],
+];
+
 function mockGenerateBom(): string {
   return JSON.stringify({
-    lines: [
-      {
-        id: "bom-mock-1",
-        item: "agarose powder",
-        category: "reagent",
-        quantity: 10,
-        unit: "g",
-        purpose: "cast gels",
-      },
-      {
-        id: "bom-mock-2",
-        item: "pipette tips",
-        category: "plasticware",
-        quantity: 200,
-        unit: "unit",
-        purpose: "liquid handling",
-      },
-    ],
+    lines: MOCK_BOM_ROWS.map(([item, category, quantity, unit, purpose], i) => ({
+      id: `bom-mock-${i + 1}`,
+      item,
+      category,
+      quantity,
+      unit,
+      purpose,
+    })),
   });
 }
 

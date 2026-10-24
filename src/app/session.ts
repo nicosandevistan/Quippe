@@ -1,32 +1,68 @@
-import { cookies } from "next/headers";
-
-import { getRepo } from "@/lib/data/repo";
-import type { Account } from "@/lib/schemas";
+import { GET as getSessionRoute } from "@/app/api/session/route";
+import type { Role } from "@/lib/schemas";
+import { callApi } from "./_lib/call-api";
 
 /**
- * Demo session helper (UI-task stand-in).
+ * Who is signed in, as seen by pages (Task 26.1).
  *
- * TODO(api): replace direct repo use with `POST /api/session` + the shared
- * role-authorization guard once Task 15 lands on main (design.md: session +
- * authorization). Until then the UI reads/writes the selected demo account id
- * from a cookie and resolves it through the repository on the server. Pages are
- * server components, so `lib/data` is only ever reached on the server — never
- * from a client component — which keeps the structure.md rule ("pages never
- * import lib/data directly; go through API/server actions") satisfied in
- * spirit.
+ * SERVER-ONLY (it uses `callApi`, which reads request cookies).
+ *
+ * There is one session: the `quippe_session` cookie owned by the API
+ * (`src/app/api/_lib/session.ts`). Pages never read that cookie themselves.
+ * They ask `GET /api/session`, in-process through `callApi`, which resolves
+ * the cookie against the seeded accounts and reports the current account and
+ * its landing page.
  */
 
-const SESSION_COOKIE = "quippe_demo_account";
-
-/** The current demo account, or null when not signed in. */
-export async function getCurrentAccount(): Promise<Account | null> {
-  const id = cookies().get(SESSION_COOKIE)?.value;
-  if (!id) return null;
-  // The cookie holds a raw account id; the repo validates it exists.
-  const repo = getRepo();
-  const accounts = await repo.listDemoAccounts();
-  return accounts.find((a) => a.id === (id as Account["id"])) ?? null;
+/** A demo account as listed by `GET /api/session`. */
+export interface DemoAccount {
+  id: string;
+  role: Role;
+  orgId?: string;
+  companyId?: string;
+  ergId?: string;
+  /** Name of the org or company the account belongs to, when known. */
+  label?: string;
 }
 
-/** Name of the cookie, exported for the sign-in server action. */
-export const SESSION_COOKIE_NAME = SESSION_COOKIE;
+/** The signed-in account and where its role lands. */
+export interface CurrentSession {
+  account: DemoAccount;
+  landing: string;
+}
+
+interface SessionRouteBody {
+  accounts: Array<Omit<DemoAccount, "label"> & { label: string | null }>;
+  current: { accountId: string; role: Role; landing: string } | null;
+}
+
+/** All demo accounts plus the current session, via `GET /api/session`. */
+export async function getSessionState(): Promise<{
+  accounts: DemoAccount[];
+  current: CurrentSession | null;
+}> {
+  const res = await callApi<SessionRouteBody>(getSessionRoute, {
+    path: "/api/session",
+  });
+  if (!res.ok || res.json === null) return { accounts: [], current: null };
+
+  const accounts: DemoAccount[] = res.json.accounts.map((a) => ({
+    id: a.id,
+    role: a.role,
+    ...(a.orgId !== undefined ? { orgId: a.orgId } : {}),
+    ...(a.companyId !== undefined ? { companyId: a.companyId } : {}),
+    ...(a.ergId !== undefined ? { ergId: a.ergId } : {}),
+    ...(a.label !== null ? { label: a.label } : {}),
+  }));
+
+  const current = res.json.current;
+  if (current === null) return { accounts, current: null };
+  const account = accounts.find((a) => a.id === current.accountId);
+  if (account === undefined) return { accounts, current: null };
+  return { accounts, current: { account, landing: current.landing } };
+}
+
+/** The signed-in demo account, or null when nobody is signed in. */
+export async function getCurrentAccount(): Promise<DemoAccount | null> {
+  return (await getSessionState()).current?.account ?? null;
+}

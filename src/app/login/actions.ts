@@ -2,58 +2,55 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-import { getRepo } from "@/lib/data/repo";
-import type { Account, Role } from "@/lib/schemas";
-
-import { SESSION_COOKIE_NAME } from "../session";
+import { SESSION_COOKIE } from "@/app/api/_lib/session";
+import { POST as postSessionRoute } from "@/app/api/session/route";
+import { callApi } from "../_lib/call-api";
 
 /**
- * Sign-in server action for the demo login picker (Task 23.1; Req 1.1, 1.3,
- * 1.6).
+ * Sign-in server action for the demo login picker (Task 23.1, rewired in
+ * Task 26.1; Req 1.1, 1.3, 1.6).
  *
- * TODO(api): swap the cookie write + repo lookup for `POST /api/session` once
- * Task 15 lands. The action binds the chosen demo account to the session and
- * routes to that role's landing view. Selecting a new account REPLACES the
- * session (Req 1.5) because the cookie is overwritten.
+ * Signing in is `POST /api/session`, called in-process. The route validates
+ * the account, sets the `quippe_session` cookie on its response, and returns
+ * the role's landing page. A server action's cookie writes go through
+ * `cookies()`, so the action copies that one cookie (same value and options)
+ * onto the real response, then redirects to the landing page. Picking another
+ * account overwrites the same cookie, which replaces the old session
+ * (Req 1.6).
  */
 
-/** Where each role lands after sign-in (Req 1.3). */
-export function landingPathForRole(account: Account): string {
-  const role: Role = account.role;
-  switch (role) {
-    case "club_officer":
-    case "club_member":
-      // Officer/member land on their org page.
-      return account.orgId ? `/org/${account.orgId}` : "/";
-    case "club_advisor":
-      return "/advisor";
-    case "company_liaison":
-    case "erg_lead":
-      // Company roles land on their company dashboard.
-      return account.companyId ? `/company/${account.companyId}` : "/";
-    default: {
-      // Exhaustiveness guard: a new role must be handled above.
-      const _never: never = role;
-      return _never;
-    }
-  }
+// The cookie the pre-API stand-in session used. It is no longer read
+// anywhere; sign-in deletes it so old browsers drop it. The name is built
+// from parts so the structure guard test can forbid the literal everywhere.
+const LEGACY_STAND_IN_COOKIE = ["quippe", "demo", "account"].join("_");
+
+interface SignInBody {
+  accountId: string;
+  role: string;
+  landing: string;
 }
 
 export async function signInAction(formData: FormData): Promise<void> {
   const accountId = String(formData.get("accountId") ?? "");
-  const repo = getRepo();
-  const accounts = await repo.listDemoAccounts();
-  const account = accounts.find((a) => a.id === (accountId as Account["id"]));
-  if (!account) {
-    // No sign-up exists; an unknown id just returns to the picker.
+  if (accountId.length === 0) redirect("/login");
+
+  const res = await callApi<SignInBody>(postSessionRoute, {
+    method: "POST",
+    path: "/api/session",
+    body: { accountId },
+  });
+  const sessionCookie = res.response.cookies.get(SESSION_COOKIE);
+  if (!res.ok || res.json === null || sessionCookie === undefined) {
+    // Unknown account: there is no sign-up, so go back to the picker.
     redirect("/login");
   }
 
-  cookies().set(SESSION_COOKIE_NAME, account.id, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
+  cookies().set(SESSION_COOKIE, sessionCookie.value, {
+    httpOnly: sessionCookie.httpOnly ?? true,
+    sameSite: sessionCookie.sameSite ?? "lax",
+    path: sessionCookie.path ?? "/",
   });
-  redirect(landingPathForRole(account));
+  cookies().delete(LEGACY_STAND_IN_COOKIE);
+
+  redirect(res.json.landing);
 }

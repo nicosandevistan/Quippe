@@ -44,7 +44,25 @@ interface DashboardMatch {
   noReasons: boolean;
   /** Every one of this company's offers the ask matched (score-desc order). */
   matchedOfferIds: string[];
+  /**
+   * Display fields the liaison page needs (Task 26.1, additive). `ask` is the
+   * matched ask's public request fields, `orgName` the requesting org's name,
+   * and `offer` the best-matching offer's id, type, and notes.
+   */
+  ask: Pick<
+    Ask,
+    "id" | "type" | "topic" | "groupSize" | "deliveryMode" | "preferredDates" | "status"
+  >;
+  orgName: string;
+  offer: Pick<Offer, "id" | "type" | "notes">;
 }
+
+/**
+ * Roles that may view a company dashboard: the company liaison, and the
+ * company's ERG lead as a read-only view (Task 26.1). Both are limited to their
+ * OWN company by the ownership check below. Accept/decline stay liaison-only.
+ */
+const DASHBOARD_ROLES = ["company_liaison", "erg_lead"] as const;
 
 /**
  * Count an organization's PAST MATCHES from its timeline — the fairness input
@@ -81,8 +99,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } },
 ): Promise<NextResponse> {
-  // Authorize: only a company liaison sees a liaison dashboard (Req 5.1, 1.4).
-  const auth = await requireRole(req, "company_liaison");
+  // Authorize: a company liaison (or the company's ERG lead, read-only) sees
+  // the dashboard (Req 5.1, 1.4; Task 26.1).
+  const auth = await requireRole(req, DASHBOARD_ROLES);
   if (!auth.ok) return auth.response;
   const { session } = auth;
 
@@ -175,6 +194,8 @@ export async function GET(
     // `rankMatches` already sorts by score desc with a deterministic tie-break,
     // so the first match is this ask's best match to us.
     const best: Match = matches[0];
+    const bestOffer = survivors.find((o) => o.id === best.offerId);
+    if (bestOffer === undefined) continue; // cannot happen: best comes from survivors
     dashboard.push({
       askId: ask.id,
       orgId: org.id,
@@ -183,6 +204,17 @@ export async function GET(
       reasons: best.reasons,
       noReasons: best.reasons.length === 0,
       matchedOfferIds: matches.map((m) => m.offerId),
+      ask: {
+        id: ask.id,
+        type: ask.type,
+        topic: ask.topic,
+        groupSize: ask.groupSize,
+        deliveryMode: ask.deliveryMode,
+        preferredDates: ask.preferredDates,
+        status: ask.status,
+      },
+      orgName: org.name,
+      offer: { id: bestOffer.id, type: bestOffer.type, notes: bestOffer.notes },
     });
   }
 

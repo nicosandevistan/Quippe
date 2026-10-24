@@ -72,6 +72,21 @@ describe("GET /api/session — one account per role is offered (Req 1.1)", () =>
     expect(body.accounts).toHaveLength(Role.options.length);
   });
 
+  it("labels each account with the org or company it is bound to (Task 26.1)", async () => {
+    const res = await GET(getRequest());
+    const body = (await res.json()) as {
+      accounts: Array<{ id: string; label: string | null }>;
+    };
+    const labels = Object.fromEntries(body.accounts.map((a) => [a.id, a.label]));
+    expect(labels).toEqual({
+      "acc-officer": "Latinos in STEM Society",
+      "acc-advisor": "Northgate High Biology Club",
+      "acc-member": "Latinos in STEM Society",
+      "acc-liaison": "Harborview Therapeutics",
+      "acc-erglead": "Harborview Therapeutics",
+    });
+  });
+
   it("reports no current session when the request has no cookie", async () => {
     const res = await GET(getRequest());
     const body = (await res.json()) as { current: unknown };

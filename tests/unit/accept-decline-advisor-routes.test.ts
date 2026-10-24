@@ -6,6 +6,7 @@ import { POST as declineAsk } from "@/app/api/asks/[id]/decline/route";
 import { POST as approveAsk } from "@/app/api/asks/[id]/approve/route";
 import { POST as rejectAsk } from "@/app/api/asks/[id]/reject/route";
 import { GET as advisorQueue } from "@/app/api/advisor/queue/route";
+import { GET as getOrg } from "@/app/api/org/[id]/route";
 import { getRepo } from "@/lib/data/repo";
 import { SESSION_COOKIE } from "@/app/api/_lib/session";
 import type {
@@ -35,15 +36,16 @@ import type {
  *   - acc-liaison     company_liaison bound to co-harborview (the only usable
  *                     liaison account; co-harborview owns the off-hv-* offers)
  *   - acc-advisor     club_advisor bound to org-hsbio (the seeded advisor)
- *   - co-harborview   company owning off-hv-tour (lab_tour, capacity 20),
+ *   - co-harborview   company owning off-hv-tour (lab_tour, capacity 30),
  *                     off-hv-speaker (speaker, capacity 50), off-hv-supplies
  *   - co-tidepool     owns off-tp-supplies (used for the cross-company case)
  *   - org-liss        the org the accepted/declined asks belong to
  *   - org-hsbio       the advisor's own org (advisor-scoped queue + approve)
  *   - org-synbio      a DIFFERENT org (advisor org-mismatch + queue scoping)
  *
- * off-hv-tour.capacity is 20, which drives the capacity-edge case: a matched
- * ask with groupSize 21 can never fit, so the accept is refused with no state
+ * off-hv-tour.capacity is 30 (raised from 20 in Task 26.1 so the 25-person
+ * demo club fits), which drives the capacity-edge case: a matched ask with
+ * groupSize 31 can never fit, so the accept is refused with no state
  * change and no timeline event — independent of any prior commitments in the
  * shared store.
  *
@@ -80,7 +82,7 @@ const ORG_LISS = "org-liss" as OrgId;
 const ORG_HSBIO = "org-hsbio" as OrgId;
 const ORG_SYNBIO = "org-synbio" as OrgId;
 
-const OFF_HV_TOUR = "off-hv-tour" as OfferId; // capacity 20
+const OFF_HV_TOUR = "off-hv-tour" as OfferId; // capacity 30
 const OFF_HV_SPEAKER = "off-hv-speaker" as OfferId; // capacity 50
 const OFF_TP_SUPPLIES = "off-tp-supplies" as OfferId; // another company's offer
 
@@ -187,11 +189,11 @@ describe("POST /api/asks/[id]/accept and /decline (matched-only)", () => {
 
 describe("POST /api/asks/[id]/accept (capacity gate)", () => {
   it("refuses a capacity-exceeding accept with NO status change and NO timeline event (409, Req 6.7, Property 3)", async () => {
-    // off-hv-tour has capacity 20; a matched ask of groupSize 21 can never fit
+    // off-hv-tour has capacity 30; a matched ask of groupSize 31 can never fit
     // regardless of prior commitments, so this is a robust capacity-edge case.
     const askId = await seedAsk({
       status: "matched",
-      groupSize: 21,
+      groupSize: 31,
       orgId: ORG_LISS,
     });
     const before = await eventsForAsk(ORG_LISS, askId);
@@ -270,6 +272,41 @@ describe("POST /api/asks/[id]/accept (success)", () => {
     );
   });
 
+  it("shows ONE event per accept on the org page while keeping both copies stored (Req 2.1, 6.4; Task 26.1)", async () => {
+    const askId = await seedAsk({
+      status: "matched",
+      groupSize: 3,
+      orgId: ORG_LISS,
+    });
+    const res = await acceptAsk(
+      reqAs(LIAISON, `http://test/api/asks/${askId}/accept`, {
+        method: "POST",
+        body: { offerId: OFF_HV_SPEAKER },
+      }),
+      { params: { id: askId } },
+    );
+    expect(res.status).toBe(200);
+
+    // The dual write is kept: two stored events, one per voice.
+    const stored = await eventsForAsk(ORG_LISS, askId);
+    expect(stored.length).toBe(2);
+    expect(stored.filter((e) => e.id.startsWith("ev-org-")).length).toBe(1);
+    expect(stored.filter((e) => e.id.startsWith("ev-co-")).length).toBe(1);
+
+    // The org page drops the company-voice copy, so the outcome shows once.
+    const orgRes = await getOrg(
+      reqAs("acc-officer", `http://test/api/org/${ORG_LISS}`),
+      { params: { id: ORG_LISS } },
+    );
+    expect(orgRes.status).toBe(200);
+    const orgBody = await orgRes.json();
+    const shown = (orgBody.timeline as { id: string; refs: string[] }[]).filter(
+      (e) => e.refs.includes(askId),
+    );
+    expect(shown.length).toBe(1);
+    expect(shown[0].id.startsWith("ev-org-")).toBe(true);
+  });
+
   it("writes dual events on a successful decline too (Req 6.5, 18.3)", async () => {
     const askId = await seedAsk({
       status: "matched",
@@ -302,7 +339,11 @@ describe("POST /api/asks/[id]/accept (success)", () => {
 // --- advisor approve/reject: pending-only by matching org ----------------
 
 describe("POST /api/asks/[id]/approve and /reject (advisor)", () => {
-  it("approves a pending ask on the advisor's own org → open (Req 9.3)", async () => {
+  it("approves a pending ask that an offer fits → matched (Req 9.3; Task 26.1)", async () => {
+    // Task 26.1 fix 1: approval now asks the matching core for the status.
+    // This lab_tour (5 people, 2027-02-10, in person, Worcester) fits
+    // off-hv-tour (Boston, ~61 km, minAge 14 vs org-hsbio ageYears 14), so the
+    // approved ask lands on `matched` and the liaison can accept it.
     const askId = await seedAsk({
       status: "pending_advisor_approval",
       orgId: ORG_HSBIO,
@@ -316,8 +357,41 @@ describe("POST /api/asks/[id]/approve and /reject (advisor)", () => {
     );
     expect(res.status).toBe(200);
     const body = await res.json();
+    expect(body.ask.status).toBe("matched");
+    expect((await getRepo().getAsk(askId))?.status).toBe("matched");
+  });
+
+  it("approves a pending ask that no offer fits → open (Req 9.3)", async () => {
+    // No seeded offer is available on 2031-01-01, so the hard filters leave
+    // nothing and the approved ask stays `open`.
+    const askId = await seedAsk({
+      status: "pending_advisor_approval",
+      orgId: ORG_HSBIO,
+      preferredDates: ["2031-01-01"],
+    });
+
+    const res = await approveAsk(
+      reqAs(ADVISOR, `http://test/api/asks/${askId}/approve`, {
+        method: "POST",
+      }),
+      { params: { id: askId } },
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
     expect(body.ask.status).toBe("open");
     expect((await getRepo().getAsk(askId))?.status).toBe("open");
+  });
+
+  it("approves the seeded high school supplies ask → matched against Granite (demo step 6)", async () => {
+    const res = await approveAsk(
+      reqAs(ADVISOR, "http://test/api/asks/ask-hsbio-supplies/approve", {
+        method: "POST",
+      }),
+      { params: { id: "ask-hsbio-supplies" } },
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.ask.status).toBe("matched");
   });
 
   it("rejects a pending ask on the advisor's own org → rejected (Req 9.5)", async () => {

@@ -1,29 +1,38 @@
 "use server";
 
+import { POST as handoffRoute } from "@/app/api/org/[id]/handoff/route";
+import type { HandoffResult } from "@/components/HandoffSummaryView";
 import type { HandoffSummary } from "@/lib/schemas";
+import { apiErrorText, callApi } from "../../_lib/call-api";
 
 /**
- * Handoff summary action — UI stand-in (Task 23.2; Req 3).
+ * Handoff summary action (Task 23.2, rewired in Task 26.1; Req 3).
  *
- * TODO(api): call `POST /api/org/[id]/handoff` once Task 16 lands. That route
- * runs the AI `handoffSummary` over THIS org's timeline only and returns a
- * typed fallback on bad/empty refs (Req 3.4, 3.5). Until the route exists, this
- * action returns the typed fallback shape so the page can render the
- * "couldn't generate" state and the wiring is already in place.
+ * Calls `POST /api/org/[id]/handoff` in-process. The route checks that the
+ * caller is this org's officer, reads only this org's timeline, and returns
+ * either a summary or its typed fallback (Req 3.4, 3.5). This action only
+ * turns that answer into something the view can render.
  */
 
-export const HANDOFF_FALLBACK_NOTE =
-  "A handoff summary isn't available yet — the summary service isn't wired up in this build.";
+type HandoffBody =
+  | { ok: true; summary: HandoffSummary }
+  | { ok: false; summary: null; fallback: unknown }
+  | { error: string };
 
 export async function generateHandoffAction(
-  _orgId: string,
-): Promise<HandoffSummary> {
-  // Typed fallback (Req 3.5): empty collections, no invented references.
-  return {
-    activeRelationships: [],
-    contactsByRole: {},
-    openAsks: [],
-    whatWorked: [],
-    referencedIds: [],
-  };
+  orgId: string,
+): Promise<HandoffResult> {
+  const res = await callApi<HandoffBody>(handoffRoute, {
+    method: "POST",
+    path: `/api/org/${encodeURIComponent(orgId)}/handoff`,
+    params: { id: orgId },
+  });
+  const body = res.json;
+  if (!res.ok || body === null || !("ok" in body)) {
+    return {
+      kind: "error",
+      message: apiErrorText(body, "The handoff summary couldn't be made. Please try again."),
+    };
+  }
+  return body.ok ? { kind: "summary", summary: body.summary } : { kind: "fallback" };
 }

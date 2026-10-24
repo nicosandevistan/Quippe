@@ -1,27 +1,32 @@
-import { notFound } from "next/navigation";
-
+import { notFound, redirect } from "next/navigation";
+import { GET as getOrgRoute } from "@/app/api/org/[id]/route";
 import { Acronym, resetAcronyms } from "@/components/Acronym";
+import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
 import { TimelineList } from "@/components/TimelineList";
-import { sortTimeline } from "@/lib/core/timeline";
-import { getRepo } from "@/lib/data/repo";
-import type { OrgId } from "@/lib/schemas";
-
+import { navLinksFor } from "@/components/nav-links";
+import type { Organization, TimelineEvent } from "@/lib/schemas";
+import { callApi } from "../../_lib/call-api";
 import { getCurrentAccount } from "../../session";
+import { generateHandoffAction } from "./actions";
 import { HandoffButton } from "./HandoffButton";
 
 /**
- * Organization page (Task 23.2; Req 2.1–2.6, 3.1, 3.4, 3.5).
+ * Organization page (Task 23.2, rewired in Task 26.1; Req 2.1–2.6, 3.1).
  *
- * Shows the org profile and its timeline in reverse-chronological order via the
- * pure core `sortTimeline`. A missing org 404s (Req 2.6). Create/edit/delete
- * controls are HIDDEN for members (Req 2.3) — this page is read-only for
- * everyone in the MVP, and members simply never see write actions. The
- * "Generate handoff summary" button renders the summary or its typed fallback.
- *
- * TODO(api): read the org + timeline from `GET /api/org/[id]` once Task 16
- * lands; today it reads the repo on the server.
+ * Reads the org and its timeline from `GET /api/org/[id]`, which checks that
+ * the viewer belongs to this org and returns the timeline already sorted
+ * newest first. Not signed in goes to the account picker; another org's page
+ * shows a short message; a missing org is a 404 (Req 2.6). Members see a
+ * read-only notice (Req 2.3). Only this org's officer gets the handoff
+ * section (Req 3.1).
  */
+
+interface OrgBody {
+  organization: Organization;
+  timeline: TimelineEvent[];
+  emptyTimeline: boolean;
+}
 
 export default async function OrgPage({
   params,
@@ -29,23 +34,36 @@ export default async function OrgPage({
   params: { id: string };
 }) {
   resetAcronyms();
-  const repo = getRepo();
-  const orgId = params.id as OrgId;
+  const account = await getCurrentAccount();
+  const nav = navLinksFor(account);
 
-  const org = await repo.getOrganization(orgId);
-  if (!org) {
-    notFound();
+  const res = await callApi<OrgBody>(getOrgRoute, {
+    path: `/api/org/${encodeURIComponent(params.id)}`,
+    params: { id: params.id },
+  });
+  if (res.status === 401) redirect("/login");
+  if (res.status === 404) notFound();
+  if (res.status === 403 || !res.ok || res.json === null) {
+    return (
+      <PageShell role={account?.role} navLinks={nav}>
+        <h1 className="text-2xl font-semibold">Club page</h1>
+        <div className="mt-4">
+          <EmptyState
+            title="This page belongs to a different organization."
+            message="Use the links above to go to your own pages, or switch account."
+          />
+        </div>
+      </PageShell>
+    );
   }
 
-  const events = sortTimeline(await repo.listTimelineEvents(orgId));
-  const account = await getCurrentAccount();
+  const { organization: org, timeline } = res.json;
   const isMember = account?.role === "club_member";
-  // Only an officer of THIS org gets the handoff action in the MVP.
   const canGenerateHandoff =
-    account?.role === "club_officer" && account.orgId === orgId;
+    account?.role === "club_officer" && account.orgId === org.id;
 
   return (
-    <PageShell role={account?.role}>
+    <PageShell role={account?.role} navLinks={nav}>
       <h1 className="text-2xl font-semibold">{org.name}</h1>
       <p className="mt-1 text-gray-700">
         {org.school} · {org.city}
@@ -74,20 +92,24 @@ export default async function OrgPage({
 
       <h2 className="mt-8 text-xl font-semibold">Timeline</h2>
       <p className="mt-1 text-sm text-gray-600">
-        Recent asks, matches, visits, and donations — newest first.
+        Recent asks, matches, visits, and donations, newest first.
       </p>
       <div className="mt-3">
-        <TimelineList events={events} />
+        <TimelineList events={timeline} />
       </div>
 
       {canGenerateHandoff ? (
         <>
           <h2 className="mt-8 text-xl font-semibold">End-of-year handoff</h2>
           <p className="mt-1 text-sm text-gray-600">
-            Make a short <Acronym term="handoff summary" expansion="a recap for the next officers" />{" "}
-            from this org&apos;s timeline.
+            Make a short{" "}
+            <Acronym
+              term="handoff summary"
+              expansion="a recap for the next officers"
+            />{" "}
+            from this club&apos;s timeline.
           </p>
-          <HandoffButton orgId={orgId} />
+          <HandoffButton orgId={org.id} generate={generateHandoffAction} />
         </>
       ) : null}
     </PageShell>

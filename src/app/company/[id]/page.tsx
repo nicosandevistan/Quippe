@@ -1,28 +1,52 @@
 import { notFound } from "next/navigation";
-
+import { GET as dashboardRoute } from "@/app/api/company/[id]/dashboard/route";
+import { GET as offersRoute } from "@/app/api/offers/route";
 import { Acronym, resetAcronyms } from "@/components/Acronym";
+import type { DashboardEntry } from "@/components/DashboardEntryView";
+import { offerTypeLabel } from "@/components/DashboardEntryView";
 import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
-import { visibleToCompany } from "@/lib/core/safety";
-import { getRepo } from "@/lib/data/repo";
-import type { Ask, CompanyId } from "@/lib/schemas";
-
+import { navLinksFor } from "@/components/nav-links";
+import type { Offer } from "@/lib/schemas";
+import { apiErrorText, callApi } from "../../_lib/call-api";
 import { getCurrentAccount } from "../../session";
+import {
+  acceptAskAction,
+  confirmInventoryAction,
+  createOfferAction,
+  declineAskAction,
+  normalizeInventoryAction,
+} from "./actions";
+import { DashboardList } from "./DashboardList";
 import { InventoryUpload } from "./InventoryUpload";
 import { OfferForm } from "./OfferForm";
 
 /**
- * Company page (Task 25.1; Req 4, 5, 7, 13):
- * - Dashboard of matched asks the company may see, excluding pending/rejected
- *   via the pure `visibleToCompany` (Correctness Property 2).
- * - Offer list + create form (erg_event gated on an existing ERG).
- * - CSV inventory upload -> review -> confirm.
+ * Company page (Task 25.1, rewired in Task 26.1; Req 4, 5, 6, 7, 13).
  *
- * TODO(api): the dashboard's score + reasons come from
- * `GET /api/company/[id]/dashboard` (Task 17.2); until it lands we list the
- * visible matched asks WITHOUT a score and show the "no reasons available yet"
- * state, which is the design's documented empty-reasons case (Req 5.4).
+ * Data comes from two API routes, called in-process:
+ * - `GET /api/offers`: the signed-in account's company, its offers, and
+ *   whether it has an ERG;
+ * - `GET /api/company/[id]/dashboard`: matched asks with score and reasons,
+ *   already filtered so asks waiting for advisor approval never appear.
+ *
+ * Both routes are limited to this company's liaison and ERG lead. Anyone else
+ * sees a short sign-in message. The liaison can accept or decline matched
+ * asks; the ERG lead sees the dashboard read-only. Offers can be posted by
+ * both; inventory upload is the liaison's.
  */
+
+interface OffersBody {
+  company: { id: string; name: string; city: string };
+  offers: Offer[];
+  hasErg: boolean;
+}
+
+interface DashboardBody {
+  companyId: string;
+  matches: DashboardEntry[];
+  empty: boolean;
+}
 
 export default async function CompanyPage({
   params,
@@ -30,127 +54,120 @@ export default async function CompanyPage({
   params: { id: string };
 }) {
   resetAcronyms();
-  const repo = getRepo();
-  const companyId = params.id as CompanyId;
-
-  const company = await repo.getCompany(companyId);
-  if (!company) notFound();
-
   const account = await getCurrentAccount();
-  const isOwner =
-    (account?.role === "company_liaison" || account?.role === "erg_lead") &&
-    account.companyId === companyId;
+  const nav = navLinksFor(account);
+  const [offersRes, dashboardRes] = await Promise.all([
+    callApi<OffersBody>(offersRoute, { path: "/api/offers" }),
+    callApi<DashboardBody>(dashboardRoute, {
+      path: `/api/company/${encodeURIComponent(params.id)}/dashboard`,
+      params: { id: params.id },
+    }),
+  ]);
 
-  const offers = await repo.listOffers({ companyId });
-  const hasErg = await repo.ergExistsForCompany(companyId);
+  // The dashboard route decides who may see this company's page: 401 when
+  // nobody is signed in, 403 for any other role or another company's account.
+  if (
+    account === null ||
+    dashboardRes.status === 401 ||
+    dashboardRes.status === 403
+  ) {
+    return (
+      <PageShell role={account?.role} navLinks={nav}>
+        <h1 className="text-2xl font-semibold">Company page</h1>
+        <p className="mt-4 rounded bg-gray-100 px-3 py-2 text-sm text-gray-700">
+          Sign in as this company&apos;s liaison to manage offers and inventory.
+        </p>
+      </PageShell>
+    );
+  }
+  if (dashboardRes.status === 404) notFound();
 
-  // Dashboard: matched asks visible to companies (CP2). The real route sorts by
-  // score; without it we just list the visible matched asks.
-  const allAsks = await repo.listAsks({ status: "matched" });
-  const visibleAsks: Ask[] = allAsks.filter((a) => visibleToCompany(a));
+  const isLiaison = account.role === "company_liaison";
+  const company = offersRes.json?.company;
+  const offers = offersRes.json?.offers ?? [];
+  const hasErg = offersRes.json?.hasErg ?? false;
 
   return (
-    <PageShell role={account?.role}>
-      <h1 className="text-2xl font-semibold">{company.name}</h1>
-      <p className="mt-1 text-gray-700">{company.city}</p>
+    <PageShell role={account.role} navLinks={nav}>
+      <h1 className="text-2xl font-semibold">{company?.name ?? "Company page"}</h1>
+      {company ? <p className="mt-1 text-gray-700">{company.city}</p> : null}
 
       {/* Dashboard ---------------------------------------------------- */}
       <h2 className="mt-8 text-xl font-semibold">Matched asks</h2>
       <p className="mt-1 text-sm text-gray-600">
-        Requests from student groups that match your offers.
+        Requests from student groups that match your offers, best match first.
+        {isLiaison ? "" : " You can view these; the company liaison accepts or declines."}
       </p>
       <div className="mt-3">
-        {visibleAsks.length === 0 ? (
-          <EmptyState
-            title="No matched asks yet"
-            message="When a student group's request matches one of your offers, it shows up here."
+        {dashboardRes.ok && dashboardRes.json !== null ? (
+          <DashboardList
+            entries={dashboardRes.json.matches}
+            canDecide={isLiaison}
+            accept={acceptAskAction}
+            decline={declineAskAction}
           />
         ) : (
-          <ul className="space-y-3">
-            {visibleAsks.map((a) => (
+          <p role="alert" className="text-sm text-red-700">
+            {apiErrorText(dashboardRes.json, "The dashboard couldn't be loaded.")}
+          </p>
+        )}
+      </div>
+
+      {/* Offers ------------------------------------------------------- */}
+      <h2 className="mt-10 text-xl font-semibold">Your offers</h2>
+      <div className="mt-3">
+        {!offersRes.ok ? (
+          <p role="alert" className="text-sm text-red-700">
+            {apiErrorText(offersRes.json, "Your offers couldn't be loaded.")}
+          </p>
+        ) : offers.length === 0 ? (
+          <EmptyState title="No offers yet" message="Post your first offer below." />
+        ) : (
+          <ul className="space-y-2">
+            {offers.map((o) => (
               <li
-                key={a.id}
-                className="rounded-md border border-gray-200 bg-white p-4"
+                key={o.id}
+                className="rounded border border-gray-200 bg-white p-3 text-sm"
               >
-                <p className="font-medium">{a.topic}</p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Group of {a.groupSize} ·{" "}
-                  {a.deliveryMode === "in_person" ? "In person" : "Virtual"}
-                </p>
-                <p className="mt-1 text-sm italic text-gray-500">
-                  Match reasons aren&apos;t available yet.
-                </p>
+                <span className="font-medium">{offerTypeLabel(o.type)}</span>{" "}
+                · up to {o.capacity} people ·{" "}
+                {o.deliveryMode === "in_person" ? "in person" : "virtual"} ·{" "}
+                {o.city}
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      {/* Owner-only management --------------------------------------- */}
-      {isOwner ? (
+      <h2 className="mt-10 text-xl font-semibold">Post an offer</h2>
+      {!hasErg ? (
+        <p className="mt-1 text-sm text-gray-600">
+          To post an{" "}
+          <Acronym term="ERG" expansion="employee resource group" /> event,
+          create an ERG first.
+        </p>
+      ) : null}
+      <div className="mt-3">
+        <OfferForm hasErg={hasErg} createOffer={createOfferAction} />
+      </div>
+
+      {isLiaison ? (
         <>
-          <h2 className="mt-10 text-xl font-semibold">Your offers</h2>
-          <div className="mt-3">
-            {offers.length === 0 ? (
-              <EmptyState title="No offers yet" message="Post your first offer below." />
-            ) : (
-              <ul className="space-y-2">
-                {offers.map((o) => (
-                  <li
-                    key={o.id}
-                    className="rounded border border-gray-200 bg-white p-3 text-sm"
-                  >
-                    <span className="font-medium">{readableOfferType(o.type)}</span>{" "}
-                    · capacity {o.capacity} ·{" "}
-                    {o.deliveryMode === "in_person" ? "in person" : "virtual"} ·{" "}
-                    {o.city}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <h2 className="mt-10 text-xl font-semibold">Post an offer</h2>
-          {!hasErg ? (
-            <p className="mt-1 text-sm text-gray-600">
-              To post an{" "}
-              <Acronym term="ERG" expansion="employee resource group" /> event,
-              create an ERG first.
-            </p>
-          ) : null}
-          <div className="mt-3">
-            <OfferForm hasErg={hasErg} />
-          </div>
-
           <h2 className="mt-10 text-xl font-semibold">Upload inventory</h2>
           <p className="mt-1 text-sm text-gray-600">
             Paste your surplus items. You&apos;ll review them before anything is
             saved.
           </p>
           <div className="mt-3">
-            <InventoryUpload />
+            <InventoryUpload
+              actions={{
+                normalize: normalizeInventoryAction,
+                confirm: confirmInventoryAction,
+              }}
+            />
           </div>
         </>
-      ) : (
-        <p className="mt-8 rounded bg-gray-100 px-3 py-2 text-sm text-gray-700">
-          Sign in as this company&apos;s liaison to manage offers and inventory.
-        </p>
-      )}
+      ) : null}
     </PageShell>
   );
-}
-
-function readableOfferType(type: string): string {
-  switch (type) {
-    case "supplies":
-      return "Supplies";
-    case "lab_tour":
-      return "Lab tour";
-    case "speaker":
-      return "Speaker";
-    case "erg_event":
-      return "ERG event";
-    default:
-      return type;
-  }
 }

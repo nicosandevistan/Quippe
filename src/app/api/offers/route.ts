@@ -147,3 +147,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const created = await repo.createOffer(offer.data);
   return NextResponse.json({ offer: created }, { status: 201 });
 }
+
+/**
+ * `GET /api/offers` (Task 26.1, read-only, additive): the signed-in liaison's
+ * or ERG lead's own company, its offers, and whether it has an ERG, so the
+ * company page can render through the API instead of importing `lib/data`
+ * (structure.md). Scoped to the session's company; other companies' offers
+ * are never returned.
+ *
+ * Response: 200 `{ company: { id, name, city }, offers: Offer[], hasErg }`.
+ */
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const auth = await requireRole(req, ALLOWED_ROLES);
+  if (!auth.ok) return auth.response;
+  const companyId = companyOf(auth.session);
+  if (companyId === null) {
+    return NextResponse.json(
+      { error: "Your account is not associated with a company." },
+      { status: 403 },
+    );
+  }
+
+  const repo = getRepo();
+  const company = await repo.getCompany(companyId);
+  if (company === null) {
+    return NextResponse.json({ error: "Company not found." }, { status: 404 });
+  }
+  const offers = await repo.listOffers({ companyId });
+  const hasErg = await repo.ergExistsForCompany(companyId);
+
+  return NextResponse.json({
+    company: { id: company.id, name: company.name, city: company.city },
+    offers,
+    hasErg,
+  });
+}

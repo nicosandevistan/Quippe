@@ -3,9 +3,16 @@ import type { NextRequest } from "next/server";
 
 import { gateHighSchoolInPerson } from "@/lib/core/safety";
 import { getRepo } from "@/lib/data/repo";
-import { Ask, type AskId, type OrgId } from "@/lib/schemas";
+import {
+  Ask,
+  type AskId,
+  type EventId,
+  type OrgId,
+  type TimelineEvent,
+} from "@/lib/schemas";
 
 import { requireRole } from "../../_lib/guard";
+import { statusAfterMatching } from "../../_lib/match-status";
 
 /**
  * Ask confirmation route for Quippe (Task 19.1; Req 8.8, 9.1).
@@ -41,6 +48,11 @@ const ConfirmedAskInput = Ask.omit({ id: true, orgId: true, status: true });
 /** Mint a server-owned, namespaced AskId for a confirmed ask. */
 function newAskId(): AskId {
   return `ask-${crypto.randomUUID()}` as AskId;
+}
+
+/** Mint a server-owned, namespaced TimelineEvent id for the "ask" event. */
+function newEventId(): EventId {
+  return `ev-${crypto.randomUUID()}` as EventId;
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -114,22 +126,49 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // Run date injected ONLY here at the boundary; the core receives it as an
+  // argument (tech.md).
+  const now = new Date().toISOString().slice(0, 10);
+
+  // Same-day events sort by `seq` (Req 2.4). Continue after any events the org
+  // already has on this date so each new "ask" event gets a distinct seq.
+  const existingToday = (await repo.listTimelineEvents(orgId)).filter(
+    (e) => e.date === now,
+  ).length;
+
   // 5) For each confirmed ask: assign server-owned id + orgId, and set the
-  //    status from the deterministic gate — `pending_advisor_approval` for an
-  //    in-person high-school ask, `open` otherwise (Req 9.1). The client's
-  //    status is ignored. Persist each confirmed ask.
+  //    status. The deterministic gate runs first: an in-person high-school ask
+  //    is held at `pending_advisor_approval` (Req 9.1). Every other ask is
+  //    company-visible, and its status comes from the matching core
+  //    (`statusAfterMatching`): `matched` when at least one offer passes the
+  //    hard filters, otherwise `open` (approved demo fix 1, Task 26.1: before
+  //    this nothing ever set `matched`, so accept/decline could never act on a
+  //    newly composed ask). The client's status is ignored. Persist each ask
+  //    and record ONE plain-language "ask" event on the org timeline so the
+  //    org page shows what was asked (demo step 7).
   const saved: Ask[] = [];
   for (const p of parsed) {
     // `p.success` is guaranteed true here (invalid ones were rejected above).
     if (!p.success) continue;
-    const status = gateHighSchoolInPerson(p.data, org);
-    const ask: Ask = {
-      ...p.data,
-      id: newAskId(),
-      orgId,
-      status,
-    };
+    const draft: Ask = { ...p.data, id: newAskId(), orgId, status: "open" };
+    const gated = gateHighSchoolInPerson(draft, org);
+    const status =
+      gated === "pending_advisor_approval"
+        ? gated
+        : await statusAfterMatching(repo, draft, org, now);
+    const ask: Ask = { ...draft, status };
     saved.push(await repo.saveAsk(ask));
+
+    const event: TimelineEvent = {
+      id: newEventId(),
+      orgId,
+      kind: "ask",
+      date: now,
+      seq: existingToday + saved.length,
+      summary: `Asked for: ${ask.topic}`,
+      refs: [ask.id],
+    };
+    await repo.addTimelineEvent(event);
   }
 
   // 6) Return the saved asks with their resulting statuses.

@@ -17,7 +17,7 @@
       "size": 25,
       "mission": "A first-generation college affinity club supporting Latino students in science and engineering through hands-on workshops, industry mentorship, and lab experience.",
       "underResourced": true,
-      "ageYears": 3
+      "ageYears": 18
     },
     {
       "id": "org-hsbio",
@@ -28,7 +28,7 @@
       "size": 18,
       "mission": "A high school biology club exploring genetics, microbiology, and environmental science through after-school experiments and guest speakers.",
       "underResourced": true,
-      "ageYears": 2,
+      "ageYears": 14,
       "advisorAccountId": "acc-advisor"
     },
     {
@@ -40,7 +40,7 @@
       "size": 12,
       "mission": "An undergraduate synthetic biology competition team designing engineered bacterial systems and running weekly bench sessions.",
       "underResourced": false,
-      "ageYears": 4
+      "ageYears": 18
     },
     {
       "id": "org-undergradlab",
@@ -51,7 +51,7 @@
       "size": 6,
       "mission": "A small undergraduate research lab studying coastal water quality and microplastics in Massachusetts estuaries.",
       "underResourced": false,
-      "ageYears": 5
+      "ageYears": 18
     }
   ],
 
@@ -106,7 +106,7 @@
       "id": "off-hv-tour",
       "companyId": "co-harborview",
       "type": "lab_tour",
-      "capacity": 20,
+      "capacity": 30,
       "availableDates": ["2027-02-10", "2027-03-05"],
       "deliveryMode": "in_person",
       "city": "Boston",
@@ -199,6 +199,17 @@
       "topic": "molecular biology lab tour",
       "needsSupplies": false,
       "status": "matched"
+    },
+    {
+      "id": "ask-hsbio-supplies",
+      "orgId": "org-hsbio",
+      "type": "supplies",
+      "groupSize": 18,
+      "preferredDates": ["2027-02-05"],
+      "deliveryMode": "in_person",
+      "topic": "Bacteria culture lab supplies",
+      "needsSupplies": true,
+      "status": "pending_advisor_approval"
     }
   ],
 
@@ -311,7 +322,7 @@
       "unit": "L",
       "expiry": "2028-08-01",
       "hazardClass": "flammable",
-      "hsSafe": true
+      "hsSafe": false
     },
     {
       "id": "inv-hv-expired-taq",

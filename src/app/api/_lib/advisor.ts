@@ -4,6 +4,7 @@ import { getRepo } from "@/lib/data/repo";
 import type { Ask, AskId, AskStatus } from "@/lib/schemas";
 
 import { denyOwnership } from "./guard";
+import { statusAfterMatching } from "./match-status";
 import type { Session } from "./session";
 
 /**
@@ -28,7 +29,8 @@ export type ModerateResult =
 /**
  * Apply an advisor moderation decision to an ask, moving it to `target` only
  * when every guard passes. `target` is `open` for approve (Req 9.3) and
- * `rejected` for reject (Req 9.5).
+ * `rejected` for reject (Req 9.5). An approve lands on `matched` instead of
+ * `open` when the matching core finds at least one offer (Task 26.1 fix 1).
  */
 export async function moderatePendingAsk(
   session: Session,
@@ -72,6 +74,21 @@ export async function moderatePendingAsk(
   }
 
   // Every guard passed: transition to the target status (Req 9.3, 9.5).
-  const updated = await repo.setAskStatus(askId, target);
+  //
+  // Approve (target `open`) now resolves to `matched` or `open` through the
+  // deterministic matching core (approved demo fix 1, Task 26.1). Before
+  // this, an approved ask always became `open`, and since accept/decline act
+  // only on `matched` asks, an approved high school ask could never be
+  // accepted. Reject keeps its fixed `rejected` target. The run date is
+  // injected here at the boundary.
+  let finalStatus: AskStatus = target;
+  if (target === "open") {
+    const org = await repo.getOrganization(ask.orgId);
+    if (org !== null) {
+      const now = new Date().toISOString().slice(0, 10);
+      finalStatus = await statusAfterMatching(repo, ask, org, now);
+    }
+  }
+  const updated = await repo.setAskStatus(askId, finalStatus);
   return { ok: true, ask: updated };
 }

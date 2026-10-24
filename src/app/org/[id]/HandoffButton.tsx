@@ -1,96 +1,63 @@
 "use client";
 
 import { useState } from "react";
-
-import type { HandoffSummary } from "@/lib/schemas";
-
-import { generateHandoffAction, HANDOFF_FALLBACK_NOTE } from "./actions";
+import {
+  HandoffSummaryView,
+  type HandoffResult,
+} from "@/components/HandoffSummaryView";
 
 /**
- * "Generate handoff summary" button (Task 23.2; Req 3.1, 3.4, 3.5).
+ * "Generate handoff summary" button (Task 23.2, rewired in Task 26.1;
+ * Req 3.1, 3.4, 3.5). The server action calls `POST /api/org/[id]/handoff`;
+ * the result renders in an announced status region.
  *
- * Client component so it can show the result inline after the server action
- * returns. Renders the summary when it has content, or a plain-language
- * "couldn't generate" note when the typed fallback comes back empty (Req 3.5).
- *
- * TODO(api): the action targets a stand-in today; it will call
- * `POST /api/org/[id]/handoff` once Task 16 lands.
+ * The server action arrives as a prop from the server page instead of being
+ * imported here. Next bundles actions imported by client components into a
+ * separate server layer with its own copy of the in-memory repo, so writes
+ * made there would not show up on the pages or API routes.
  */
 
 type State =
   | { phase: "idle" }
   | { phase: "loading" }
-  | { phase: "done"; summary: HandoffSummary };
+  | { phase: "done"; result: HandoffResult };
 
-function isEmpty(s: HandoffSummary): boolean {
-  return (
-    s.activeRelationships.length === 0 &&
-    s.openAsks.length === 0 &&
-    s.whatWorked.length === 0 &&
-    Object.keys(s.contactsByRole).length === 0
-  );
-}
-
-export function HandoffButton({ orgId }: { orgId: string }) {
+export function HandoffButton({
+  orgId,
+  generate,
+}: {
+  orgId: string;
+  generate: (orgId: string) => Promise<HandoffResult>;
+}) {
   const [state, setState] = useState<State>({ phase: "idle" });
 
   async function run() {
     setState({ phase: "loading" });
-    const summary = await generateHandoffAction(orgId);
-    setState({ phase: "done", summary });
+    try {
+      const result = await generate(orgId);
+      setState({ phase: "done", result });
+    } catch {
+      setState({
+        phase: "done",
+        result: {
+          kind: "error",
+          message: "The handoff summary couldn't be made. Please try again.",
+        },
+      });
+    }
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-4">
       <button
         type="button"
         onClick={run}
         disabled={state.phase === "loading"}
         className="rounded bg-blue-700 px-3 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:opacity-60"
       >
-        {state.phase === "loading"
-          ? "Generating…"
-          : "Generate handoff summary"}
+        {state.phase === "loading" ? "Writing summary…" : "Generate handoff summary"}
       </button>
-
-      {state.phase === "done" ? (
-        <div className="mt-3" role="status">
-          {isEmpty(state.summary) ? (
-            <p className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-              {HANDOFF_FALLBACK_NOTE}
-            </p>
-          ) : (
-            <div className="rounded-md border border-gray-200 bg-white p-3 text-sm">
-              <HandoffBlock
-                title="Active relationships"
-                items={state.summary.activeRelationships}
-              />
-              <HandoffBlock
-                title="Open asks"
-                items={state.summary.openAsks}
-              />
-              <HandoffBlock
-                title="What worked"
-                items={state.summary.whatWorked}
-              />
-            </div>
-          )}
-        </div>
-      ) : null}
+      {state.phase === "done" ? <HandoffSummaryView result={state.result} /> : null}
     </div>
-  );
-}
-
-function HandoffBlock({ title, items }: { title: string; items: string[] }) {
-  if (items.length === 0) return null;
-  return (
-    <section className="mb-2">
-      <h3 className="font-medium">{title}</h3>
-      <ul className="ml-5 list-disc">
-        {items.map((it, i) => (
-          <li key={i}>{it}</li>
-        ))}
-      </ul>
-    </section>
   );
 }

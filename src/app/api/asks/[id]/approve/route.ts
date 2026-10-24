@@ -10,8 +10,9 @@ import { requireRole } from "../../../_lib/guard";
  * Advisor approve route for Quippe (Task 18.2; Req 9.3, 9.4).
  *
  * `POST /api/asks/[id]/approve` approves an Ask that is awaiting advisor
- * review. On success the ask moves from `pending_advisor_approval` to `open`
- * (Req 9.3), which makes it visible to companies.
+ * review. On success the ask leaves `pending_advisor_approval` and becomes
+ * visible to companies (Req 9.3): `matched` when the matching core finds at
+ * least one offer, otherwise `open` (Task 26.1 fix 1, see `_lib/advisor.ts`).
  *
  * The route is THIN: it authorizes the role, then delegates the shared guard
  * order (exists → pending-only → the advisor's org owns the ask) to

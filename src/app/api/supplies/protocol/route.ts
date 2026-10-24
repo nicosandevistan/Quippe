@@ -29,7 +29,7 @@ import { requireRole } from "../../_lib/guard";
  * session), not trusted from the client.
  *
  * Authorization (Req 12): drafting a protocol is a Club_Officer action for their
- * own org.
+ * own org, also open to the club's Club_Advisor (Task 26.1).
  *
  * Input validation: the submitted CoverageReport is validated with the
  * `CoverageReport` schema; an invalid report returns 400.
@@ -42,9 +42,25 @@ import { requireRole } from "../../_lib/guard";
  * (Req 12.4) — not a transport error.
  */
 
+/**
+ * Roles that may run the supplies flow for their OWN org (the org comes from
+ * the session). A club officer plans supplies; a club advisor may run it for
+ * their club too (Task 26.1, demo step 6: the high school club has no officer
+ * account, so its advisor shows that hazardous items never appear in the
+ * club's supply list). Members stay read-only and company roles are denied.
+ */
+const SUPPLIES_ROLES = ["club_officer", "club_advisor"] as const;
+
+/**
+ * Fixed advisor-review text for high school protocols (Req 12.6). Not
+ * exported: Next.js route modules may only export HTTP handlers and config.
+ */
+const HS_REVIEW_TEXT = "Advisor must review before running";
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  // Authorize: only a club officer drafts a protocol for their org (Req 12, 1.4).
-  const auth = await requireRole(req, "club_officer");
+  // Authorize: a club officer or advisor drafts a protocol for their org
+  // (Req 12, 1.4).
+  const auth = await requireRole(req, SUPPLIES_ROLES);
   if (!auth.ok) return auth.response;
   const { session } = auth;
 
@@ -102,7 +118,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const result = await writeProtocol(coverage, isHighSchool);
 
   if (result.ok) {
-    return NextResponse.json({ ok: true, protocol: result.value });
+    // Safety does not depend on the model (Req 12.6, F6; Task 26.1): for a
+    // high school club the route itself sets the review flag and the fixed
+    // review text, so a model that omits or rewords them cannot drop the
+    // advisor-review requirement.
+    const protocol = isHighSchool
+      ? { ...result.value, hsReviewRequired: true, hsReviewText: HS_REVIEW_TEXT }
+      : result.value;
+    return NextResponse.json({ ok: true, protocol });
   }
 
   // Surface the typed fallback in place of a protocol (Req 12.4).

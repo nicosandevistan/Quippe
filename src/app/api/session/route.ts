@@ -39,6 +39,22 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const repo = getRepo();
   const accounts = await repo.listDemoAccounts();
 
+  // Display label per account (Task 26.1, additive): the name of the org or
+  // company the account is bound to, or null when it is bound to neither (or
+  // the binding does not resolve). Lets the login page say e.g.
+  // "Club officer · Latinos in STEM Society".
+  const labels = await Promise.all(
+    accounts.map(async (a): Promise<string | null> => {
+      if (a.orgId !== undefined) {
+        return (await repo.getOrganization(a.orgId))?.name ?? null;
+      }
+      if (a.companyId !== undefined) {
+        return (await repo.getCompany(a.companyId))?.name ?? null;
+      }
+      return null;
+    }),
+  );
+
   const current = req.cookies.get(SESSION_COOKIE)?.value;
   const currentSession =
     current !== undefined && current.length > 0
@@ -46,12 +62,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       : null;
 
   return NextResponse.json({
-    accounts: accounts.map((a) => ({
+    accounts: accounts.map((a, i) => ({
       id: a.id,
       role: a.role,
       orgId: a.orgId,
       companyId: a.companyId,
       ergId: a.ergId,
+      label: labels[i],
     })),
     current:
       currentSession === null

@@ -266,7 +266,7 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Show profile fields + reverse-chron timeline; hide create/edit/delete controls for members; empty-timeline indicator; "Generate handoff summary" button rendering the summary or its typed fallback
     - _Requirements: 2.1, 2.2, 2.3, 2.5, 3.1, 3.4, 3.5_
 
-- [ ] 24. Build the asks composer and supplies pages
+- [x] 24. Build the asks composer and supplies pages
   - [x] 24.1 Implement `src/app/asks/new` composer
     - Free-text input with 1..5000 validation and retained text on error; render structured drafts for per-ask review; require explicit confirm per ask; render the manual-form fallback pre-filled with extracted fields
     - _Requirements: 8.1, 8.2, 8.6, 8.7, 8.8_
@@ -288,12 +288,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Verify labeled fields, keyboard navigation, and error-to-field association on login, composer, supplies, and advisor pages (automated checks; note full AA needs manual assistive-tech review)
     - _Requirements: 1.4, 2.3_
 
-- [ ] 26. Final checkpoint - wire the end-to-end demo path
-  - [ ] 26.1 Verify and wire the demo flow across pages and routes
+- [x] 26. Final checkpoint - wire the end-to-end demo path
+  - [x] 26.1 Verify and wire the demo flow across pages and routes
     - Walk the officer → supplies coverage → liaison accept → advisor approve → handoff path end to end through the API routes, fixing any integration gaps so no page imports `lib/data` directly
     - _Requirements: 1.3, 2.2, 3.1, 5.1, 6.4, 9.3, 12.1_
 
-  - [ ] 26.2 Final checkpoint
+  - [x] 26.2 Final checkpoint
     - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

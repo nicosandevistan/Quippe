@@ -604,6 +604,44 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792867987843
       }
+    ],
+    "26.1 Verify and wire the demo flow across pages and routes": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792868276400
+      },
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792870952258
+      }
+    ],
+    "26.2 Final checkpoint": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792870953000
+      },
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792870971841
+      }
+    ],
+    "26. Final checkpoint - wire the end-to-end demo path": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792870971903
+      }
+    ],
+    "24. Build the asks composer and supplies pages": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792870976372
+      }
     ]
   }
 }

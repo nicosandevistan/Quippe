@@ -5,6 +5,7 @@ import { handoffSummary } from "@/lib/ai";
 import { getRepo } from "@/lib/data/repo";
 import type { Organization, OrgId, TimelineEvent } from "@/lib/schemas";
 
+import { isCompanyCopyEvent } from "../../../_lib/accept-decline";
 import { denyOwnership, requireRole } from "../../../_lib/guard";
 
 /**
@@ -67,7 +68,16 @@ export async function POST(
   }
 
   // THIS org's timeline only (Req 3.2): we never pass any other org's events.
-  const events: TimelineEvent[] = await repo.listTimelineEvents(orgId);
+  //
+  // Accept/decline write two copies of each outcome (Req 6.4, 6.5): one in the
+  // org's voice and one in the company's voice (id prefix `ev-co-`). Both carry
+  // the orgId, so the timeline read returns both. The company copy is dropped
+  // here, as on the org page (`GET /api/org/[id]`), so the summary is built
+  // from the org's own records with each outcome once. Otherwise the model
+  // sees every accept/decline twice and may report it twice (Task 26.1).
+  const events: TimelineEvent[] = (await repo.listTimelineEvents(orgId)).filter(
+    (e) => !isCompanyCopyEvent(e),
+  );
 
   // Delegate to the AI module. It returns the typed fallback on an empty
   // timeline (Req 3.5) and on any out-of-scope id reference (Req 3.4, CP9),

@@ -7,9 +7,11 @@ import type {
   InventoryItem,
   ItemId,
   Organization,
+  Unit,
 } from "@/lib/schemas";
 
 import { allocate } from "./capacity";
+import { keywordOverlap } from "./matching";
 import { convert } from "./units";
 
 /**
@@ -19,7 +21,8 @@ import { convert } from "./units";
  * This module is PURE per structure.md: no I/O, no randomness, no `Date.now()`.
  * The run date arrives as the `now` argument and is never read from a clock.
  * It imports ONLY from `src/lib/schemas` and the sibling core modules
- * `./capacity` (allocate) and `./units` (convert).
+ * `./capacity` (allocate), `./matching` (keywordOverlap) and `./units`
+ * (convert).
  *
  * `buildCoverage` compares a BOM against an inventory snapshot and produces an
  * identical `CoverageReport` for identical inputs. Three guarantees land here:
@@ -38,9 +41,14 @@ import { convert } from "./units";
  *   - BOM lines are matched to inventory by CATEGORY, compared after name
  *     normalization (case- and whitespace-insensitive). The BOM line's own
  *     `category` is normalized the same way as each item's `category`.
+ *   - Within a category, candidates are tried in order of NAME similarity to
+ *     the line's `item` (keyword overlap, highest first), then by item id
+ *     (Task 26.1). A same-category item with no name overlap is still used
+ *     after the better matches.
  *   - A candidate item only contributes to a line when its unit is convertible
- *     to the line's unit (`convert` returns a number); cross-dimension or
- *     countable `unit` pairs (`convert` returns null) are skipped for that line
+ *     to the line's unit (`convert` returns a number), or when both are the
+ *     countable `unit` (same count, identity; Task 26.1). Cross-dimension
+ *     pairs and `unit` paired with mass/volume are skipped for that line
  *     (Req 11.6).
  *   - Inventory is a shared pool: an item's quantity consumed by one BOM line
  *     is not available to another. Allocation reuses `allocate`, so the total
@@ -51,7 +59,7 @@ import { convert } from "./units";
  *
  * Determinism (Req 11.1): BOM lines are processed and emitted in their given
  * order; candidate items within a category are consulted in a stable order
- * (sorted by item id). No object-key iteration order or randomness is relied
+ * (name similarity descending, then item id). No object-key iteration order or randomness is relied
  * upon, so an identical BOM + inventory snapshot + `now` + `org` yields a
  * byte-identical report.
  */
@@ -109,6 +117,53 @@ interface Candidate {
 }
 
 /**
+ * Unit conversion as coverage needs it (Task 26.1).
+ *
+ * `convert` (units.ts, CP7) returns null for ANY pair involving the countable
+ * `unit`, including `unit` -> `unit`. Coverage used it directly, so a count
+ * line (pipette tips, tubes, gloves) could never be filled, even from an item
+ * counted in the same `unit`. Req 11.6 only excludes items whose unit "cannot
+ * be converted"; a count to the same count is the identity. This helper adds
+ * that one case and otherwise defers to `convert`, which stays unchanged
+ * (Property 7 still holds for it). `unit` to mass/volume stays null.
+ */
+function convertForCoverage(quantity: number, from: Unit, to: Unit): number | null {
+  if (from === "unit" && to === "unit") return quantity;
+  return convert(quantity, from, to);
+}
+
+/**
+ * Order a category group's candidates for one BOM line (Task 26.1, F6 /
+ * Req 11 "name normalization"): name similarity to the line's `item`
+ * descending, then item id ascending.
+ *
+ * Before this, candidates were drawn in item-id order only, so a "P1000
+ * pipette tips" line could be filled with inoculation loops just because their
+ * id sorted first. Similarity is the pure `keywordOverlap` token score from the
+ * matching core (case- and punctuation-insensitive). Items with no name overlap
+ * stay in the list after the better matches, so the category fallback still
+ * applies. Returns a new array; the shared `Candidate` objects (and their
+ * running `remaining`) are not copied, so the shared-pool accounting is
+ * unchanged. Pure and deterministic: the id tie-break is a total order.
+ */
+function orderByNameSimilarity(
+  lineItem: string,
+  candidates: readonly Candidate[],
+): Candidate[] {
+  const scored = candidates.map((candidate) => ({
+    candidate,
+    score: keywordOverlap(lineItem, candidate.item.name),
+  }));
+  scored.sort((a, b) => {
+    if (a.score !== b.score) return b.score - a.score;
+    const aId = a.candidate.item.id;
+    const bId = b.candidate.item.id;
+    return aId < bId ? -1 : aId > bId ? 1 : 0;
+  });
+  return scored.map((s) => s.candidate);
+}
+
+/**
  * Build a deterministic coverage report comparing `bom` to `inventory`.
  *
  * @param bom       the bill of materials to cover
@@ -148,14 +203,17 @@ export function buildCoverage(
 
   const lines: CoverageLine[] = bom.lines.map((line) => {
     const needed = line.quantity;
-    const candidates = byCategory.get(normalize(line.category)) ?? [];
+    const candidates = orderByNameSimilarity(
+      line.item,
+      byCategory.get(normalize(line.category)) ?? [],
+    );
 
     let allocated = 0;
     const itemRefs: ItemId[] = [];
     let supplyingCompanyId: CompanyId | undefined;
 
-    // Draw from each candidate in the fixed (id-sorted) order until the line is
-    // satisfied. Quantities are converted into the BOM line's unit; items whose
+    // Draw from each candidate in the fixed (name similarity, then id) order
+    // until the line is satisfied. Quantities are converted into the BOM line's unit; items whose
     // unit is not convertible to the line's unit are skipped (Req 11.6).
     for (const candidate of candidates) {
       if (allocated >= needed) {
@@ -164,13 +222,13 @@ export function buildCoverage(
       if (candidate.remaining <= 0) {
         continue;
       }
-      const availableInLineUnit = convert(
+      const availableInLineUnit = convertForCoverage(
         candidate.remaining,
         candidate.item.unit,
         line.unit,
       );
       if (availableInLineUnit === null || availableInLineUnit <= 0) {
-        continue; // cross-dimension / countable unit — cannot serve this line
+        continue; // cross-dimension, or count vs mass/volume: cannot serve this line
       }
 
       // Allocate the single remaining demand (needed − allocated) against this
@@ -190,7 +248,11 @@ export function buildCoverage(
       // Convert the amount taken back into the item's native unit and subtract
       // it so the next BOM line sees only what is left. The round-trip is exact
       // within the same dimension (CP7).
-      const consumedNative = convert(givenInLineUnit, line.unit, candidate.item.unit);
+      const consumedNative = convertForCoverage(
+        givenInLineUnit,
+        line.unit,
+        candidate.item.unit,
+      );
       candidate.remaining -= consumedNative ?? 0;
     }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createRepoFromSeed, SeedSchema } from "@/lib/data/repo";
+import { computeHsSafe } from "@/lib/core/safety";
 import { Role, type OrgId, type CompanyId } from "@/lib/schemas";
 
 import seed from "@/lib/data/seed.json";
@@ -118,5 +119,45 @@ describe("InMemoryRepo", () => {
     for (const role of Role.options) {
       expect(accounts.filter((a) => a.role === role).length).toBe(1);
     }
+  });
+});
+
+// --- Seed consistency for the demo (Task 26.1) ---------------------------
+
+describe("seed.json demo consistency (Task 26.1)", () => {
+  it("stores every inventory item's hsSafe exactly as the deterministic rule computes it (Req 14.1-14.3)", () => {
+    // The seed's hsSafe must agree with computeHsSafe. This caught
+    // inv-hv-ethanol, which was hazardClass "flammable" but hsSafe true.
+    const parsed = SeedSchema.parse(seed);
+    for (const item of parsed.inventory) {
+      const rule = computeHsSafe(
+        { hazardClass: item.hazardClass, name: item.name, category: item.category },
+        item.hsSafe,
+      );
+      expect(item.hsSafe, item.id).toBe(rule);
+    }
+  });
+
+  it("sets each org's ageYears to its youngest member's age, so offer minAge compares like with like (Req 15.5)", () => {
+    // `Organization.ageYears` is compared with an offer's `minAge`, which is a
+    // participant age (14, 16). It therefore holds the youngest member's age,
+    // not how long the club has existed.
+    const parsed = SeedSchema.parse(seed);
+    const ages = Object.fromEntries(
+      parsed.organizations.map((o) => [o.id, o.ageYears]),
+    );
+    expect(ages).toEqual({
+      "org-liss": 18,
+      "org-hsbio": 14,
+      "org-synbio": 18,
+      "org-undergradlab": 18,
+    });
+  });
+
+  it("seeds a pending high school supplies ask for the advisor demo step", () => {
+    const parsed = SeedSchema.parse(seed);
+    const ask = parsed.asks.find((a) => a.id === "ask-hsbio-supplies");
+    expect(ask?.orgId).toBe("org-hsbio");
+    expect(ask?.status).toBe("pending_advisor_approval");
   });
 });
