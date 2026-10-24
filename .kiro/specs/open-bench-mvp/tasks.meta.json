@@ -334,6 +334,18 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792861042704
       }
+    ],
+    "9. Checkpoint - deterministic core complete": [
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792861205303
+      },
+      {
+        "executionId": "444a1908-3075-4d79-8741-fa8397136606",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792861249781
+      }
     ]
   }
 }

@@ -126,7 +126,7 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - `rejectsStudentIdentity` rejects each listed identity attribute and passes mission/ask text; `sortTimeline` is stable reverse-chron and identical on repeated calls (same-date tie-break by `seq`)
     - _Requirements: 2.4, 7.6, 17.5_
 
-- [ ] 9. Checkpoint - deterministic core complete
+- [x] 9. Checkpoint - deterministic core complete
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Build the data layer: repository and seed
