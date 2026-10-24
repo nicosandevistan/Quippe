@@ -240,12 +240,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Empty/over-length composer text rejected with retained input; unconfirmed ask not submitted; HS in-person confirm → pending; bom range validation; coverage classification wired; protocol rejects out-of-scope IDs and includes missing lines + HS text
     - _Requirements: 8.2, 8.8, 9.1, 10.2, 11.2, 12.2, 12.4, 12.6_
 
-- [ ] 20. Implement inventory upload/normalization API routes
-  - [ ] 20.1 Implement `POST /api/inventory/normalize` and `POST /api/inventory/confirm`
+- [x] 20. Implement inventory upload/normalization API routes
+  - [x] 20.1 Implement `POST /api/inventory/normalize` and `POST /api/inventory/confirm`
     - `normalize` enforces ≤10MB/≤5000 rows (reject with size/row error, keep saved items unchanged), calls `normalizeInventory`, and returns an editable review set without persisting; `confirm` overrides each item's `hsSafe` with `computeHsSafe`, persists only confirmed items, and indicates completion
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.7, 14.1, 14.2, 14.3_
 
-  - [ ]* 20.2 Write unit tests for inventory routes
+  - [x]* 20.2 Write unit tests for inventory routes
     - Oversize/over-row upload rejected with limit message and unchanged items; nothing persisted before confirm; on confirm `hsSafe` is rule-computed (AI value overridden) and items persist
     - _Requirements: 13.2, 13.4, 13.5, 14.2_
 

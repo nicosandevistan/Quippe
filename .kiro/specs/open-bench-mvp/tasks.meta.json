@@ -537,6 +537,37 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792866584504
       }
+    ],
+    "20.1 Implement `POST /api/inventory/normalize` and `POST /api/inventory/confirm`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792866615068
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792866745663
+      }
+    ],
+    "20. Implement inventory upload/normalization API routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792866745725
+      }
+    ],
+    "20.2 Write unit tests for inventory routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792866748315
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792866931611
+      }
     ]
   }
 }
