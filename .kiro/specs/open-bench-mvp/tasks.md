@@ -183,12 +183,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
 - [ ] 14. Checkpoint - core, data, and AI layers complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 15. Implement session and shared authorization
-  - [ ] 15.1 Implement `POST /api/session` and the role-authorization guard
+- [x] 15. Implement session and shared authorization
+  - [x] 15.1 Implement `POST /api/session` and the role-authorization guard
     - `POST /api/session` selects a seeded demo account, binds a role session, and returns the role's landing view; terminating/replacing the session on reselect. Add a shared guard used by every route that denies out-of-role requests with a role-appropriate message and changes no data
     - _Requirements: 1.1, 1.3, 1.4, 1.5, 1.6_
 
-  - [ ]* 15.2 Write unit tests for session and authorization
+  - [x]* 15.2 Write unit tests for session and authorization
     - One account per role is offered; selecting binds role + landing; reselect replaces session; denied out-of-role action returns role-appropriate message and leaves data unchanged
     - _Requirements: 1.1, 1.4, 1.5, 1.6_
 

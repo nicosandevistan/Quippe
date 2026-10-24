@@ -346,6 +346,37 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792861249781
       }
+    ],
+    "15.1 Implement `POST /api/session` and the role-authorization guard": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792863748084
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864315609
+      }
+    ],
+    "15.2 Write unit tests for session and authorization": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792863889967
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864313094
+      }
+    ],
+    "15. Implement session and shared authorization": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792864315655
+      }
     ]
   }
 }
