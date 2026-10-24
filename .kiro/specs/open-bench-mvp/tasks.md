@@ -227,16 +227,16 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Accept/decline only from `matched`; capacity-exceeding accept rejected with no event; dual timeline events on success; advisor approve/reject only from pending by the matching org; mismatched advisor rejected
     - _Requirements: 6.3, 6.7, 9.3, 9.4, 9.5_
 
-- [ ] 19. Implement ask composer and supplies API routes
-  - [ ] 19.1 Implement `POST /api/asks/compose` and `POST /api/asks/confirm`
+- [x] 19. Implement ask composer and supplies API routes
+  - [x] 19.1 Implement `POST /api/asks/compose` and `POST /api/asks/confirm`
     - `compose` validates text length 1..5000 and returns drafts (nothing submitted); `confirm` requires explicit per-ask confirmation, runs `gateHighSchoolInPerson` to set `pending_advisor_approval` for in-person HS asks, and saves the ask
     - _Requirements: 8.2, 8.3, 8.7, 8.8, 9.1_
 
-  - [ ] 19.2 Implement `POST /api/supplies/bom`, `/coverage`, `/protocol`
+  - [x] 19.2 Implement `POST /api/supplies/bom`, `/coverage`, `/protocol`
     - `bom` validates experiment/groupSize ranges and returns BOM or fallback; `coverage` reads non-expired inventory across companies and calls `buildCoverage`; `protocol` calls `writeProtocol`, enforces item IDs ⊆ coverage IDs, lists missing lines, and adds the HS review text
     - _Requirements: 10.1, 10.2, 11.1, 11.2, 12.1, 12.2, 12.3, 12.5, 12.6; Property 1, Property 8, Property 9_
 
-  - [ ]* 19.3 Write unit tests for composer and supplies routes
+  - [x]* 19.3 Write unit tests for composer and supplies routes
     - Empty/over-length composer text rejected with retained input; unconfirmed ask not submitted; HS in-person confirm → pending; bom range validation; coverage classification wired; protocol rejects out-of-scope IDs and includes missing lines + HS text
     - _Requirements: 8.2, 8.8, 9.1, 10.2, 11.2, 12.2, 12.4, 12.6_
 
