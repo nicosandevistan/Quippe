@@ -8,7 +8,7 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
 
 ## Tasks
 
-- [ ] 1. Scaffold the project and tooling
+- [x] 1. Scaffold the project and tooling
   - Initialize a Next.js 14+ App Router project with TypeScript in `strict: true` mode at the repo root, keeping `.kiro/`, `PROJECT_BRIEF.md`, `README.md`, and `docs/` intact
   - Add Tailwind CSS and a minimal global stylesheet; no component library
   - Add dependencies: `zod`, `vitest`, `fast-check`, and TypeScript/ESLint tooling; configure `vitest.config.ts` to pick up `tests/unit` and `tests/properties`
@@ -16,19 +16,19 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
   - Add npm scripts: `dev` (next dev), `test` (vitest run), `lint` (next lint + tsc --noEmit), `seed:check` (run the seed validator), plus `.env.example` documenting `AI_PROVIDER`, `AI_MODEL`, and the provider key; do not commit `.env`; never add `.kiro/` to `.gitignore`
   - _Requirements: 19.1, 19.2_
 
-- [ ] 2. Define zod schemas and enums (leaf layer)
-  - [ ] 2.1 Define enums and branded IDs
+- [x] 2. Define zod schemas and enums (leaf layer)
+  - [x] 2.1 Define enums and branded IDs
     - Create `src/lib/schemas/enums.ts` with `OrgType`, `OfferType`, `AskStatus` (including `rejected`), `DeliveryMode`, `HazardClass` (including `none`/`unknown`), `Unit` (`uL`,`mL`,`L`,`mg`,`g`,`unit`), `CoverageStatus`, and `Role`
     - Define branded ID string types (`OrgId`, `CompanyId`, `ErgId`, `OfferId`, `AskId`, `ItemId`, `EventId`, `BomLineId`, `AccountId`) so the ID-scope validator compares sets without mixing namespaces
     - _Requirements: 4.1, 4.2, 8.1, 9.5, 11.5, 14.3_
 
-  - [ ] 2.2 Define entity schemas
+  - [x] 2.2 Define entity schemas
     - Create `src/lib/schemas/index.ts` exporting zod schemas (with `z.infer` types) for `Organization`, `Company`, `Erg`, `Offer`, `Ask`, `Match`, `InventoryItem`, `TimelineEvent`, `BomLine`, `BOM`, `CoverageLine`, `CoverageReport`, `HandoffSummary`, `Account`
     - Encode field bounds: Offer capacity int 1..10000, minAge int 0..25 when present, notes ≤ 2000; Erg name 1..120, description 1..2000, topics 1..20, capacityPerSemester int 1..10000; Ask groupSize 1..500; BOM 1..200 lines with non-empty item/category/unit/purpose and quantity > 0; refine `advisorAccountId` required when `type === "high_school_club"`
     - Ensure no student personal-identity field exists anywhere in the model
     - _Requirements: 2.1, 4.5, 4.6, 7.1, 7.2, 7.7, 8.1, 10.1, 17.4_
 
-  - [ ]* 2.3 Write unit tests for schema boundaries
+  - [x]* 2.3 Write unit tests for schema boundaries
     - Test accept/reject at edges: offer capacity 1 and 10000 (and 0, 10001 rejected), minAge 0 and 25, notes length 2000 vs 2001; ERG name/description/topics/capacity bounds; Ask groupSize 1 and 500; BOM line count 1 and 200; invalid offer type rejected
     - _Requirements: 4.2, 4.5, 4.6, 7.1, 7.2, 8.1, 10.1_
 

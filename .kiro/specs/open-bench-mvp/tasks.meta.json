@@ -1,0 +1,60 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Scaffold the project and tooling": [
+      {
+        "executionId": "d93942ef-3aa2-4719-aaed-5ecd68739eb5",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792857902921
+      },
+      {
+        "executionId": "d93942ef-3aa2-4719-aaed-5ecd68739eb5",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792858830400
+      }
+    ],
+    "2.1 Define enums and branded IDs": [
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859114747
+      },
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859176042
+      }
+    ],
+    "2.2 Define entity schemas": [
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859179002
+      },
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859295749
+      }
+    ],
+    "2. Define zod schemas and enums (leaf layer)": [
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859295806
+      }
+    ],
+    "2.3 Write unit tests for schema boundaries": [
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859300909
+      },
+      {
+        "executionId": "fc34a5fc-e862-4bc0-857b-3e62cbde2bfb",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792859384897
+      }
+    ]
+  }
+}
