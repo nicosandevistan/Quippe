@@ -240,7 +240,7 @@ export function SuppliesFlow() {
           {coverage !== null ? (
             <>
               <div className="mt-3 flex flex-wrap items-center gap-x-7 gap-y-3">
-                <p className="text-xl font-semibold tracking-[-0.01em] tabular-nums text-ink">
+                <p className="text-xl font-semibold tracking-[-0.01em] text-ink">
                   {coverageSentence}
                 </p>
                 <CoverageBar rows={rows} summary={coverageSentence} />

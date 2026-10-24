@@ -12,6 +12,11 @@
  * So this pins the exact rendered string as a regression guard: if anyone
  * reintroduces broken-up JSX around the punctuation, these fail. The user
  * seeing the spaces is most likely a stale dev-server build.
+ *
+ * The coverage `<p>` intentionally does NOT carry `tabular-nums`: with
+ * Schibsted Grotesk, tabular figures make commas and periods number-width,
+ * which reads as stray spaces before the punctuation. The class list here
+ * mirrors SuppliesFlow's real markup and asserts tabular-nums is absent.
  */
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -83,14 +88,17 @@ describe("coverage summary line", () => {
   it("renders the exact sentence in a coverage summary <p>, as SuppliesFlow does", () => {
     // SuppliesFlow renders `<p …>{coverageSentence}</p>`; mirror that exactly
     // so the test fails if the single-expression render is ever broken up.
+    // The class list matches SuppliesFlow and intentionally omits tabular-nums.
     const summary = summarySentence(summarizeCoverage(COVERAGE_FIXTURE));
     const html = renderToStaticMarkup(
-      <p className="text-xl font-semibold tracking-[-0.01em] tabular-nums text-ink">
+      <p className="text-xl font-semibold tracking-[-0.01em] text-ink">
         {summary}
       </p>,
     );
     expect(html).toContain(`>${EXPECTED}</p>`);
     expect(html).not.toContain("covered ,");
     expect(html).not.toContain("missing .");
+    // The coverage summary paragraph must not carry tabular-nums.
+    expect(html).not.toContain("tabular-nums");
   });
 });
