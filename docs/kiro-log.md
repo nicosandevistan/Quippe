@@ -80,3 +80,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 11 — AI provider interface + mock/live providers (`src/lib/ai/provider.ts`) and prompt templates with matching canned mock responses (`src/lib/ai/prompts/index.ts`).
 - **What happened (good or bad):** The app defaults to the mock provider so it runs with zero secrets: `getProvider()` returns the mock unless a live key (Anthropic/Bedrock) is configured. Each prompt embeds a stable `[[TASK:...]]` marker so the mock routes offline without any network. The id-scoped mocks (writeProtocol, handoffSummary) extract the allowed-id list straight from the prompt and echo only those, so the mock can never fabricate an out-of-scope id — which keeps the CP9 id-scope guard exercising the happy path rather than the fallback. lint + test green (119).
 - **Screenshot:**
+
+- **Time:** Afternoon
+- **Who:** Jonat (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution
+- **What we did:** Task 23 — login demo-account picker (one account per role, no sign-up) and the org page (profile, reverse-chron timeline via the pure `sortTimeline`, member read-only, empty-timeline indicator, and a "Generate handoff summary" button).
+- **What happened (good or bad):** Sign-in is a server action setting an httpOnly cookie (stand-in for POST /api/session, TODO to switch). The handoff button calls a server action that returns the typed fallback shape today, so the "couldn't generate" state and the result rendering are already wired for when Task 16 lands. 404 on a missing org via Next's notFound(). lint green.
+- **Screenshot:**

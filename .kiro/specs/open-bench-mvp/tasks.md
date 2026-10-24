@@ -257,12 +257,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Build labeled form field, validation-error display (errors associated with their fields for screen readers), empty-state, timeline list, and a role-aware nav wrapper; WCAG AA contrast, keyboard navigation, and acronym explanation on first use
     - _Requirements: 1.4, 2.3, 5.4_
 
-- [ ] 23. Build the login and organization pages
-  - [ ] 23.1 Implement `src/app/login` demo account picker
+- [x] 23. Build the login and organization pages
+  - [x] 23.1 Implement `src/app/login` demo account picker
     - Render exactly one demo account per role; selecting signs in via `POST /api/session` and routes to the role landing; no sign-up/registration control
     - _Requirements: 1.1, 1.2, 1.3, 1.6_
 
-  - [ ] 23.2 Implement `src/app/org/[id]` profile, timeline, and handoff
+  - [x] 23.2 Implement `src/app/org/[id]` profile, timeline, and handoff
     - Show profile fields + reverse-chron timeline; hide create/edit/delete controls for members; empty-timeline indicator; "Generate handoff summary" button rendering the summary or its typed fallback
     - _Requirements: 2.1, 2.2, 2.3, 2.5, 3.1, 3.4, 3.5_
 
