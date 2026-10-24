@@ -1,0 +1,17 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Environment files (commit .env.example only)
+.env
+.env.*
+!.env.example
+
+# OS and editor
+.DS_Store
+*.log
+
+# Do NOT ignore .kiro/ — it must be committed for the hackathon.
