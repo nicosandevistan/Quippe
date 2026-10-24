@@ -158,12 +158,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Add `src/lib/ai/prompts/*.ts` exported template functions for composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory; each prompt lists only the records (with IDs) the model may use and requires JSON-only output for structuring tasks; add a matching canned schema-valid response in the mock provider for each
     - _Requirements: 19.1, 19.2_
 
-- [ ] 12. Implement the AI wrapper (schema → retry → id-scope → fallback)
-  - [ ] 12.1 Implement `run` in `src/lib/ai/run.ts`
+- [x] 12. Implement the AI wrapper (schema → retry → id-scope → fallback)
+  - [x] 12.1 Implement `run` in `src/lib/ai/run.ts`
     - Call `getProvider().complete`, validate output with the given zod schema, retry exactly once with the validation error appended on failure, run `validateReferencedIds` when an allowed-ID set is supplied (reject out-of-scope IDs), and return the typed fallback when validation ultimately fails; enforce the composer 30s bound
     - _Requirements: 8.4, 8.5, 10.4, 12.4, 13.6, 19.3, 19.4, 19.5, 19.6; Property 9_
 
-  - [ ]* 12.2 Write wrapper tests with stub providers
+  - [x]* 12.2 Write wrapper tests with stub providers
     - Using stub providers against the mock: invalid-then-valid payload verifies the single retry includes the validation error; invalid-twice verifies the typed fallback; unknown-id payload verifies reject-and-fallback via `validateReferencedIds`
     - _Requirements: 8.4, 8.6, 10.5, 12.4, 13.7, 19.4, 19.5, 19.6_
 

@@ -88,3 +88,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 23 — login demo-account picker (one account per role, no sign-up) and the org page (profile, reverse-chron timeline via the pure `sortTimeline`, member read-only, empty-timeline indicator, and a "Generate handoff summary" button).
 - **What happened (good or bad):** Sign-in is a server action setting an httpOnly cookie (stand-in for POST /api/session, TODO to switch). The handoff button calls a server action that returns the typed fallback shape today, so the "couldn't generate" state and the result rendering are already wired for when Task 16 lands. 404 on a missing org via Next's notFound(). lint green.
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI wrapper + stub-provider tests
+- **What we did:** Task 12 — `src/lib/ai/run.ts`, the single AI enforcement point: provider → JSON parse → zod validate → one retry with the error appended → optional id-scope guard (CP9) → typed fallback. Added 5 wrapper tests driven by scripted stub providers.
+- **What happened (good or bad):** Worth noting for the write-up — the retry/fallback paths are exercised directly by stub providers rather than the mock: (1) invalid-then-valid proves exactly ONE retry fires and the retry prompt literally contains the prior validation error; (2) invalid-twice returns the typed fallback and stops (no third attempt); (3) a payload that is schema-valid but cites an out-of-scope id ("ROGUE-ID") is still rejected by `validateReferencedIds` and falls back — the case a plain schema check would have missed. lint + test green (124).
+- **Screenshot:**
