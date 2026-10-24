@@ -463,6 +463,37 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792865582979
       }
+    ],
+    "16.1 Implement `GET /api/org/[id]` and `POST /api/org/[id]/handoff`": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865720425
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865831386
+      }
+    ],
+    "16. Implement organization, timeline, and handoff API routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865831453
+      }
+    ],
+    "16.2 Write unit tests for org/handoff routes": [
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865835013
+      },
+      {
+        "executionId": "14bba0e0-4d34-4ec7-a64a-987096e02724",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792865988574
+      }
     ]
   }
 }

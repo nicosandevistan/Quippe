@@ -192,12 +192,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - One account per role is offered; selecting binds role + landing; reselect replaces session; denied out-of-role action returns role-appropriate message and leaves data unchanged
     - _Requirements: 1.1, 1.4, 1.5, 1.6_
 
-- [ ] 16. Implement organization, timeline, and handoff API routes
-  - [ ] 16.1 Implement `GET /api/org/[id]` and `POST /api/org/[id]/handoff`
+- [x] 16. Implement organization, timeline, and handoff API routes
+  - [x] 16.1 Implement `GET /api/org/[id]` and `POST /api/org/[id]/handoff`
     - `GET` returns profile + `sortTimeline(events)`; 404 not-found when missing; member view is read-only. `POST .../handoff` generates a summary from this org's timeline only via `handoffSummary`, returning the typed fallback on bad/empty refs
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 3.1, 3.2, 3.4, 3.5_
 
-  - [ ]* 16.2 Write unit tests for org/handoff routes
+  - [x]* 16.2 Write unit tests for org/handoff routes
     - Not-found indication for missing org; empty-timeline indicator; handoff fallback on unknown-id and on empty timeline
     - _Requirements: 2.5, 2.6, 3.4, 3.5_
 
