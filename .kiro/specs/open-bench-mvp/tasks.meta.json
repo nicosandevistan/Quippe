@@ -580,6 +580,30 @@
         "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
         "timestamp": 1792866977028
       }
+    ],
+    "24.1 Implement `src/app/asks/new` composer": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792867509725
+      },
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792867987772
+      }
+    ],
+    "24.2 Implement `src/app/supplies` BOM → coverage → protocol flow": [
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792867509781
+      },
+      {
+        "executionId": "1811b7d3-55a0-4a31-8e9c-c8053f91749b",
+        "chatSessionId": "sess_3bb4ed95-838e-4b29-8d7c-839c547eb8c1",
+        "timestamp": 1792867987843
+      }
     ]
   }
 }

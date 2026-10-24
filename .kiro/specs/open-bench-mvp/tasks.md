@@ -267,11 +267,11 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - _Requirements: 2.1, 2.2, 2.3, 2.5, 3.1, 3.4, 3.5_
 
 - [ ] 24. Build the asks composer and supplies pages
-  - [ ] 24.1 Implement `src/app/asks/new` composer
+  - [x] 24.1 Implement `src/app/asks/new` composer
     - Free-text input with 1..5000 validation and retained text on error; render structured drafts for per-ask review; require explicit confirm per ask; render the manual-form fallback pre-filled with extracted fields
     - _Requirements: 8.1, 8.2, 8.6, 8.7, 8.8_
 
-  - [ ] 24.2 Implement `src/app/supplies` BOM → coverage → protocol flow
+  - [x] 24.2 Implement `src/app/supplies` BOM → coverage → protocol flow
     - Experiment + group-size form with range validation; show the coverage report (covered/partial/missing + supplying company); render the adapted protocol with missing lines and, for HS clubs, the "Advisor must review before running" text; render typed fallbacks
     - _Requirements: 10.1, 10.2, 11.2, 12.1, 12.3, 12.5, 12.6_
 
