@@ -149,12 +149,12 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Not-found org returns null; `listInventory` never returns expired items; `seed.json` parses and contains the required fictional fixtures (≥3 hazardous, 2 expired, ~6 college-club events, one account per role)
     - _Requirements: 2.6, 14.4, 17.6_
 
-- [ ] 11. Build the AI provider, prompts, and mock responses
-  - [ ] 11.1 Implement the provider interface and mock/live providers in `src/lib/ai/provider.ts`
+- [x] 11. Build the AI provider, prompts, and mock responses
+  - [x] 11.1 Implement the provider interface and mock/live providers in `src/lib/ai/provider.ts`
     - Define `AiProvider.complete({ prompt, maxTokens })`; implement `mockProvider` (matches prompt to a canned, schema-valid response, no network) and a `liveProvider` dispatching to Bedrock/Anthropic by env; `getProvider()` returns mock unless a live key is configured
     - _Requirements: 19.1, 19.2_
 
-  - [ ] 11.2 Author prompt templates and matching mock responses
+  - [x] 11.2 Author prompt templates and matching mock responses
     - Add `src/lib/ai/prompts/*.ts` exported template functions for composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory; each prompt lists only the records (with IDs) the model may use and requires JSON-only output for structuring tasks; add a matching canned schema-valid response in the mock provider for each
     - _Requirements: 19.1, 19.2_
 
