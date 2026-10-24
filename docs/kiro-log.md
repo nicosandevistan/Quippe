@@ -80,3 +80,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Task 12 — `src/lib/ai/run.ts`, the single AI enforcement point: provider → JSON parse → zod validate → one retry with the error appended → optional id-scope guard (CP9) → typed fallback. Added 5 wrapper tests driven by scripted stub providers.
 - **What happened (good or bad):** Worth noting for the write-up — the retry/fallback paths are exercised directly by stub providers rather than the mock: (1) invalid-then-valid proves exactly ONE retry fires and the retry prompt literally contains the prior validation error; (2) invalid-twice returns the typed fallback and stops (no third attempt); (3) a payload that is schema-valid but cites an out-of-scope id ("ROGUE-ID") is still rejected by `validateReferencedIds` and falls back — the case a plain schema check would have missed. lint + test green (124).
 - **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI module functions (bug caught by type-check)
+- **What we did:** Task 13 — `src/lib/ai/index.ts` wires the five AI functions (composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory) through the wrapper with each one's output schema, typed fallback, and (for the id-scoped ones) the allowed-id set. Added 8 unit tests against the mock provider. Defined the `Protocol` schema locally in the AI layer (it is an AI-output shape, not a core domain entity, and the spec places no Protocol schema in `src/lib/schemas`).
+- **What happened (good or bad):** `tsc --noEmit` (part of `npm run lint`) caught a real type bug the unit tests passed straight through: `run()` typed its `schema` as `z.ZodType<T>`, which a zod schema containing BRANDED id types (ZodBranded, where input ≠ output) does not satisfy — so `run({ schema: BOM })` failed to compile. Fixed by widening the parameter to `z.ZodType<T, z.ZodTypeDef, unknown>`. A good example of the type-checker catching something the runtime tests could not. Also enforced Req 12.3 defensively: even a schema-valid protocol is rejected to the fallback if it omits any missing BOM line. lint + test green (132).
+- **Screenshot:**
