@@ -180,7 +180,7 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
     - Mock-provider happy paths for each function produce schema-valid output; protocol lists missing lines and includes the HS review text; handoff with no events returns the fallback; normalizeInventory output has its `hsSafe` overridden by `computeHsSafe`
     - _Requirements: 3.5, 12.3, 12.6, 14.2_
 
-- [ ] 14. Checkpoint - core, data, and AI layers complete
+- [x] 14. Checkpoint - core, data, and AI layers complete
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 15. Implement session and shared authorization
