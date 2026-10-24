@@ -1,10 +1,8 @@
 import { EmptyState } from "@/components/EmptyState";
 import { PageShell, ROLE_LABEL } from "@/components/PageShell";
-import { navLinksFor } from "@/components/nav-links";
 import type { Role } from "@/lib/schemas";
 import { getSessionState, type DemoAccount } from "../session";
 import { signInAction } from "./actions";
-
 /**
  * Demo account picker (rewired in Task 26.1; Req 1.1, 1.2, 1.3, 1.6). Restyled
  * in the visual refresh with the design tokens (see .kiro/steering/design.md).
@@ -16,10 +14,13 @@ import { signInAction } from "./actions";
  * the account picker for everyone, signed in or not, so account switching
  * always works.
  *
+ * The shell uses the "minimal" sidebar variant: just the Quippe wordmark, no
+ * account box or role nav, even when someone is already signed in. The picker
+ * itself is the only thing a visitor needs here.
+ *
  * Accessibility: each account is a labeled submit button in its own form, so
  * the picker works by keyboard alone.
  */
-
 // One-line, plain-language description of what each role does.
 const ROLE_BLURB: Record<Role, string> = {
   club_officer: "Write asks, review matches, and keep your club page current.",
@@ -28,7 +29,6 @@ const ROLE_BLURB: Record<Role, string> = {
   company_liaison: "Manage offers and inventory; accept or decline asks.",
   erg_lead: "Opt your employee resource group in and post events.",
 };
-
 const ROLE_ORDER: Role[] = [
   "club_officer",
   "club_advisor",
@@ -36,7 +36,6 @@ const ROLE_ORDER: Role[] = [
   "company_liaison",
   "erg_lead",
 ];
-
 /** Pick the first listed account for each role, in role order. */
 function oneAccountPerRole(accounts: DemoAccount[]): DemoAccount[] {
   const byRole = new Map<Role, DemoAccount>();
@@ -47,17 +46,11 @@ function oneAccountPerRole(accounts: DemoAccount[]): DemoAccount[] {
     (a): a is DemoAccount => a !== undefined,
   );
 }
-
 export default async function LoginPage() {
-  const { accounts: all, current } = await getSessionState();
+  const { accounts: all } = await getSessionState();
   const accounts = oneAccountPerRole(all);
-  const account = current?.account ?? null;
   return (
-    <PageShell
-      role={account?.role}
-      navLinks={navLinksFor(account)}
-      orgName={account?.label}
-    >
+    <PageShell variant="minimal">
       <h1 className="text-2xl font-bold tracking-[-0.015em]">
         Choose a demo account
       </h1>

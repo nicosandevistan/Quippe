@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Role } from "@/lib/schemas";
 import { SidebarNav } from "./SidebarNav";
-
 /**
  * Role-aware sidebar shell (visual refresh, matching
  * docs/design/company-dashboard.html, shared by supplies.html and club.html;
@@ -17,6 +16,12 @@ import { SidebarNav } from "./SidebarNav";
  *   ring (2px pen, 2px offset).
  * - The active nav link carries `aria-current="page"` (set in SidebarNav).
  *
+ * The sidebar has two variants. The default "full" variant shows the account
+ * box, role nav, and the "Switch demo account" link. The "minimal" variant
+ * shows only the Quippe wordmark — used on the login page, where showing a
+ * signed-in account box or role nav would be confusing. Both variants keep the
+ * skip link and `<main id="main">`.
+ *
  * No data access here. Callers pass the current role, the role-appropriate nav
  * links, and (when they already have it) the signed-in org/company name for the
  * account box. Nothing new is fetched for the shell.
@@ -28,18 +33,15 @@ export const ROLE_LABEL: Record<Role, string> = {
   company_liaison: "Company liaison",
   erg_lead: "ERG lead",
 };
-
 /** Roles that belong to a company; the rest belong to a club. */
 const COMPANY_ROLES: ReadonlySet<Role> = new Set<Role>([
   "company_liaison",
   "erg_lead",
 ]);
-
 export interface NavLink {
   href: string;
   label: string;
 }
-
 export interface PageShellProps {
   /** Current signed-in role, or undefined on the login screen. */
   role?: Role;
@@ -60,9 +62,14 @@ export interface PageShellProps {
    * and "club" otherwise (round pen badge), matching the design.
    */
   accountKind?: "club" | "company";
+  /**
+   * Sidebar contents. "full" (default) shows the account box, role nav, and
+   * the "Switch demo account" link. "minimal" shows only the wordmark, even
+   * when someone is signed in — used on the login page.
+   */
+  variant?: "full" | "minimal";
   children: ReactNode;
 }
-
 /** First letters of the first two words, up to two characters, uppercased. */
 function initialsFrom(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
@@ -71,15 +78,16 @@ function initialsFrom(name: string): string {
   const second = words.length > 1 ? (words[1]![0] ?? "") : "";
   return (first + second).toUpperCase();
 }
-
 export function PageShell({
   role,
   navLinks = [],
   orgName,
   initials,
   accountKind,
+  variant = "full",
   children,
 }: PageShellProps) {
+  const minimal = variant === "minimal";
   const roleLabel = role ? ROLE_LABEL[role] : undefined;
   const kind: "club" | "company" =
     accountKind ?? (role && COMPANY_ROLES.has(role) ? "company" : "club");
@@ -90,7 +98,6 @@ export function PageShell({
       : roleLabel !== undefined
         ? initialsFrom(roleLabel)
         : "");
-
   return (
     <div className="flex min-h-screen flex-wrap bg-bench text-ink">
       <a
@@ -106,8 +113,7 @@ export function PageShell({
         >
           Quippe
         </Link>
-
-        {role ? (
+        {!minimal && role ? (
           <div className="flex w-full items-center gap-2.5 rounded-panel border border-line bg-white p-2 px-2.5 text-left">
             <span
               className={
@@ -132,19 +138,18 @@ export function PageShell({
             </span>
           </div>
         ) : null}
-
-        {navLinks.length > 0 ? <SidebarNav links={navLinks} /> : null}
-
-        <div className="mt-auto px-2.5 text-[13px]">
-          <Link
-            href="/login"
-            className="text-pen hover:underline focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen"
-          >
-            Switch demo account
-          </Link>
-        </div>
+        {!minimal && navLinks.length > 0 ? <SidebarNav links={navLinks} /> : null}
+        {!minimal ? (
+          <div className="mt-auto px-2.5 text-[13px]">
+            <Link
+              href="/login"
+              className="text-pen hover:underline focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen"
+            >
+              Switch demo account
+            </Link>
+          </div>
+        ) : null}
       </aside>
-
       <main
         id="main"
         className="box-border min-w-0 flex-[999_1_640px] p-7 px-8 pb-12"

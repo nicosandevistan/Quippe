@@ -6,6 +6,7 @@ import {
   type DecisionResult,
 } from "@/components/DashboardEntryView";
 import { EmptyState } from "@/components/EmptyState";
+import { formatReasons, sentenceCase } from "@/components/text-format";
 import { fitBars, fitPhrase } from "./fit-label";
 /**
  * The company dashboard's matched asks as a table, matching
@@ -210,7 +211,7 @@ export function DashboardList({
                     className={accepted ? "bg-[#FAFBFC]" : undefined}
                   >
                     <td className="border-b border-[#EDEFF2] px-3.5 py-3.5 align-top">
-                      <div className="font-semibold">{entry.ask.topic}</div>
+                      <div className="font-semibold">{sentenceCase(entry.ask.topic)}</div>
                       <div className="text-[13px] text-muted">{askSubline(entry)}</div>
                     </td>
                     <td className="border-b border-[#EDEFF2] px-3.5 py-3.5 align-top">
@@ -225,7 +226,7 @@ export function DashboardList({
                       {entry.noReasons || entry.reasons.length === 0 ? (
                         <span className="italic text-muted">No reasons available</span>
                       ) : (
-                        entry.reasons.join(" ")
+                        formatReasons(entry.reasons)
                       )}
                       {result !== null ? (
                         <span

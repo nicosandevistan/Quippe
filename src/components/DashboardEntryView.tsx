@@ -9,7 +9,7 @@
  * status is shown in words instead. The result of a decision appears in a
  * `role="status"` region that is always present, so it is announced.
  */
-
+import { sentenceCase } from "@/components/text-format";
 /** A dashboard entry as returned by the dashboard route. */
 export interface DashboardEntry {
   askId: string;
@@ -31,18 +31,15 @@ export interface DashboardEntry {
   };
   offer: { id: string; type: string; notes: string };
 }
-
 export type DecisionResult =
   | { kind: "done"; status: string }
   | { kind: "error"; message: string };
-
 /** Plain phrase for a 0..1 match score, with the number. */
 export function scorePhrase(score: number): string {
   const label =
     score >= 0.7 ? "Strong match" : score >= 0.4 ? "Good match" : "Possible match";
   return `${label} (score ${score.toFixed(2)})`;
 }
-
 const STATUS_LABEL: Record<string, string> = {
   draft: "Draft",
   pending_advisor_approval: "Waiting for advisor approval",
@@ -52,31 +49,26 @@ const STATUS_LABEL: Record<string, string> = {
   declined: "Declined",
   rejected: "Rejected",
 };
-
 /** An ask status in words. */
 export function statusLabel(status: string): string {
   return STATUS_LABEL[status] ?? status;
 }
-
 const OFFER_TYPE_LABEL: Record<string, string> = {
   supplies: "Supplies",
   lab_tour: "Lab tour",
   speaker: "Speaker",
   erg_event: "ERG event",
 };
-
 /** An offer type in words. */
 export function offerTypeLabel(type: string): string {
   return OFFER_TYPE_LABEL[type] ?? type;
 }
-
 /** Result line after Accept/Decline. */
 export function decisionText(result: DecisionResult): string {
   return result.kind === "done"
     ? `Done. This ask is now ${statusLabel(result.status).toLowerCase()}.`
     : result.message;
 }
-
 export interface DashboardEntryViewProps {
   entry: DashboardEntry;
   /** True when the viewer may accept or decline (the company liaison). */
@@ -87,7 +79,6 @@ export interface DashboardEntryViewProps {
   onAccept?: () => void;
   onDecline?: () => void;
 }
-
 export function DashboardEntryView({
   entry,
   canDecide,
@@ -100,14 +91,13 @@ export function DashboardEntryView({
     result?.kind === "done" ? result.status : entry.ask.status;
   const showButtons = canDecide && status === "matched";
   const headingId = `ask-${entry.askId}-title`;
-
   return (
     <article
       aria-labelledby={headingId}
       className="rounded-md border border-gray-200 bg-white p-4"
     >
       <h3 id={headingId} className="font-medium">
-        {entry.ask.topic}
+        {sentenceCase(entry.ask.topic)}
       </h3>
       <p className="mt-1 text-sm text-gray-700">From {entry.orgName}</p>
       <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
@@ -120,7 +110,6 @@ export function DashboardEntryView({
         </span>
       </p>
       <p className="mt-2 text-sm font-medium">{scorePhrase(entry.score)}</p>
-
       <h4 className="mt-2 text-sm font-medium">Why it matches</h4>
       {entry.noReasons || entry.reasons.length === 0 ? (
         <p className="text-sm italic text-gray-600">No reasons available</p>
@@ -131,7 +120,6 @@ export function DashboardEntryView({
           ))}
         </ul>
       )}
-
       {showButtons ? (
         <div className="mt-3 flex gap-2">
           <button
@@ -156,7 +144,6 @@ export function DashboardEntryView({
           Status: {statusLabel(status)}
         </p>
       )}
-
       <div role="status" aria-live="polite" className="mt-2 text-sm">
         {result === null ? null : (
           <p

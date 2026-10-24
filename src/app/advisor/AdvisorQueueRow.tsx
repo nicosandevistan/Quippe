@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   AdvisorResultMessage,
@@ -7,7 +6,7 @@ import {
   type AdvisorResult,
 } from "@/components/AdvisorResultMessage";
 import { EmptyState } from "@/components/EmptyState";
-
+import { sentenceCase } from "@/components/text-format";
 /**
  * The advisor's approval queue with Approve / Reject buttons (Task 25.2,
  * rewired in Task 26.1; Req 9.3, 9.5, 9.6). The buttons call server actions
@@ -22,16 +21,13 @@ import { EmptyState } from "@/components/EmptyState";
  * separate server layer with its own copy of the in-memory repo, so writes
  * made there would not show up on the pages or API routes.
  */
-
 export type AdvisorActionResult =
   | { ok: true; status: string }
   | { ok: false; message: string };
-
 export interface AdvisorActions {
   approve: (askId: string) => Promise<AdvisorActionResult>;
   reject: (askId: string) => Promise<AdvisorActionResult>;
 }
-
 export interface QueueAsk {
   id: string;
   topic: string;
@@ -39,7 +35,6 @@ export interface QueueAsk {
   deliveryMode: string;
   preferredDates: string[];
 }
-
 export function AdvisorQueue({
   asks,
   actions,
@@ -52,7 +47,6 @@ export function AdvisorQueue({
     ...asks,
     ...Object.values(decided).filter((d) => !asks.some((a) => a.id === d.id)),
   ];
-
   if (shown.length === 0) {
     return (
       <EmptyState
@@ -74,7 +68,6 @@ export function AdvisorQueue({
     </ul>
   );
 }
-
 export function AdvisorQueueRow({
   ask,
   actions,
@@ -87,7 +80,6 @@ export function AdvisorQueueRow({
   const [working, setWorking] = useState(false);
   const [result, setResult] = useState<AdvisorResult | null>(null);
   const done = result?.kind === "done";
-
   async function act(decision: AdvisorDecision) {
     setWorking(true);
     try {
@@ -107,10 +99,9 @@ export function AdvisorQueueRow({
       setWorking(false);
     }
   }
-
   return (
     <li className="rounded-md border border-gray-200 bg-white p-4">
-      <p className="font-medium">{ask.topic}</p>
+      <p className="font-medium">{sentenceCase(ask.topic)}</p>
       <p className="mt-1 text-sm text-gray-600">
         Group of {ask.groupSize} ·{" "}
         {ask.deliveryMode === "in_person" ? "In person" : "Virtual"}
