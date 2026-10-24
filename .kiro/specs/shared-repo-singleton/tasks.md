@@ -89,7 +89,7 @@ Fix the dev-server bug where each evaluation of `src/lib/data/repo.ts` gets its 
   - Include the final test count from `npm test`
   - _Requirements: 2.1_
 
-- [-] 6. Commit and push to main
+- [x] 6. Commit and push to main
   - Confirm the current branch is `main` and run `git pull` first; resolve any conflict without discarding others' changes
   - Stage specific files only: `src/lib/data/repo.ts`, `tests/unit/repo-singleton.test.ts`, `docs/kiro-log.md`, `.kiro/specs/shared-repo-singleton/.config.kiro`, `.kiro/specs/shared-repo-singleton/bugfix.md`, `.kiro/specs/shared-repo-singleton/design.md`, `.kiro/specs/shared-repo-singleton/tasks.md`
   - Commit with the exact message `Fix: share one in-memory repository across all routes`
