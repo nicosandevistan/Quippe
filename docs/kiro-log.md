@@ -64,3 +64,11 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Pulled main, branched `feat/ai-layer-provider`, installed Node 24 LTS (winget), ran `npm install` once, and continued the spec from the next unchecked task. Tasks 1–9 (deterministic core, 107 tests) were already on main; the next open work was Task 10 (data layer).
 - **What happened (good or bad):** Implemented Task 10 end to end: the in-memory `Repo` (`src/lib/data/repo.ts`) matching the design interface with `listInventory` applying the expired-item filter on every read; `seed.json` with all-fictional data (3 companies in Boston/Cambridge/Worcester, 4 orgs incl. a HS club with advisor and the college club with 6 past timeline events, 3 ERGs, 9 offers, 27 inventory items with 6 hazardous + 2 expired, a 15-city MA coordinate table, one account per role); and a `seed:check` validator (`scripts/seed-check.ts`) that schema-validates the seed, checks referential integrity, and asserts the required demo fixtures. Added 12 repo/seed unit tests. `npm run seed:check`, `npm run lint`, and `npm test` all green (119 tests). One gotcha logged: zod `.optional()` rejects JSON `null`, so non-HS orgs omit `advisorAccountId` entirely.
 - **Screenshot:**
+
+- **Time:** Afternoon
+- **Who:** Jonat (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution / steering
+- **What we did:** Executed Task 22 (shared UI components) on a `ui` branch: FormField (label + aria error wiring), EmptyState, Acronym (explains on first use), TimelineList, and a role-aware PageShell with a skip link.
+- **What happened (good or bad):** Steering (product.md principles 5–6: plain language + accessible) drove the component API — every field is labeled and errors are tied to their field with aria-describedby. Built against design.md contracts; pages read the repo on the server as a temporary stand-in with TODOs to switch to the API routes once they land. Lint + 119 tests stayed green.
+- **Screenshot:**

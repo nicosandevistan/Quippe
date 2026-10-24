@@ -252,8 +252,8 @@ Tasks marked with `*` are optional (tests and non-core-demo polish) and can be s
 - [ ] 21. Checkpoint - API surface complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 22. Build shared UI components
-  - [ ] 22.1 Implement shared components in `src/components`
+- [x] 22. Build shared UI components
+  - [x] 22.1 Implement shared components in `src/components`
     - Build labeled form field, validation-error display (errors associated with their fields for screen readers), empty-state, timeline list, and a role-aware nav wrapper; WCAG AA contrast, keyboard navigation, and acronym explanation on first use
     - _Requirements: 1.4, 2.3, 5.4_
 
