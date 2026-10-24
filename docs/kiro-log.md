@@ -151,3 +151,21 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **What we did:** Wrote `.kiro/steering/design.md`, a visual design system derived from the static mockups in `docs/design/*.html` (and their `.png` renders): `landing.html`, `company-dashboard.html`, `supplies.html`, and `club.html`. The steering file pins the Schibsted Grotesk font (loaded via `next/font/google` in `layout.tsx`), the color tokens (`ink`, `muted`, `line`, `bench`, `pen`, `done`, `needed`, plus `graphite`), sentence case with no all-caps labels and no "·" separators, 6px control / 8px panel radii, no shadows for elevation (regions are separated with the `line` border and the `bench` background), lists of records rendered as HTML tables rather than stacks of cards, and the rule that color carries status only. It has `inclusion: fileMatch` on `src/app/**,src/components/**`, so it loads automatically whenever Kiro edits a UI file and never while touching core, data, or API code. Parallel sub-agents then used it to restyle the company dashboard, supplies, and club pages and to build the new landing page at `/`. A decision we recorded: `/` is now the marketing landing page, and `/login` stays the demo account picker so "Switch demo account" keeps working for every role.
 - **What happened (good or bad):** The shared steering file kept four pages consistent without re-explaining the system to each worker. Where the mockups showed data the API does not provide, we adapted or omitted rather than inventing numbers: the sidebar nav shows labels without the counts the mockup drew, "Companies you've worked with" and inter-city distances were dropped because no route returns them, and the account box shows only the org/company name and role the session already carries. A truthfulness fix came out of the sweep: the dashboard header read "Sorted by fit, then date", but the dashboard route orders matches by score descending and then by ask id (never by date), so the copy was corrected to "Sorted by fit" instead of changing the ordering. The landing checkmark draw-on animation is disabled under `prefers-reduced-motion`. Final suite: `npm run lint` clean, `npm test` 338 tests across 37 files, and `npm run build` passed.
 - **Screenshot:**
+
+## Powers and MCP
+
+- **Time:** 2026-10-24 18:44 EDT
+- **Who:** Nico
+- **Kiro tool:** IDE
+- **Feature:** power (Context7)
+- **What we did:** Used the Context7 power to look up the Next.js 14 docs (`/vercel/next.js`, v14.3.0-canary.87) and the Vercel docs (`/websites/vercel`) on whether in-memory state is shared across serverless functions. Wrote `docs/deployment-notes.md` from what it returned.
+- **What happened (good or bad):** Good. Context7 returned the exact passages we needed instead of us guessing: Vercel creates an invocation per request, shares global state only inside one instance, scales to zero, and still has cold starts, and the Next.js self-hosting docs say to replace the in-memory cache when running more than one instance. That explains why the live demo resets even after the `shared-repo-singleton` fix, which only covers one process. It also gave us the production plan: Postgres from the Vercel Marketplace behind our existing `Repo` interface, with `attachDatabasePool` from `@vercel/functions`.
+- **Screenshot:**
+
+- **Time:** 2026-10-24 18:44 EDT
+- **Who:** Nico
+- **Kiro tool:** IDE
+- **Feature:** MCP (Playwright)
+- **What we did:** Added the Playwright MCP server to `.kiro/settings/mcp.json` (`npx @playwright/mcp@latest`) and installed Chromium, to run the demo path end to end against `localhost:3000` and save a screenshot per step.
+- **What happened (good or bad):** Not run yet. The server package starts and Chromium is installed, but the Playwright tools were not exposed to the agent session or its sub-agents, so the browser run did not happen. We chose not to fall back to a hand-written Playwright script, because the point was to use the MCP server. No screenshots were saved.
+- **Screenshot:**
