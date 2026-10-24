@@ -2,7 +2,7 @@ import type { InventoryItem, Match, Offer, Organization } from "@/lib/schemas";
 import type { Ask } from "@/lib/schemas";
 
 /**
- * Deterministic matching HARD FILTERS and SOFT SCORE for Open Bench
+ * Deterministic matching HARD FILTERS and SOFT SCORE for Quippe
  * (Tasks 7.1 & 7.2; Req 15, 16).
  *
  * This module lives in the PURE core per structure.md: no I/O, no randomness,

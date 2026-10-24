@@ -2,9 +2,9 @@
 inclusion: always
 ---
 
-# Product: Open Bench
+# Product: Quippe
 
-Open Bench connects student-run STEM organizations (high school clubs, college clubs, small undergraduate labs) with biotech companies. Companies offer surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs). Each company has one liaison who manages its offers.
+Quippe connects student-run STEM organizations (high school clubs, college clubs, small undergraduate labs) with biotech companies. Companies offer surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs). Each company has one liaison who manages its offers.
 
 The full spec lives in `PROJECT_BRIEF.md` at the repo root. When anything here conflicts with a generated spec, ask before changing behavior.
 

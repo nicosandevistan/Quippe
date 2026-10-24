@@ -1,4 +1,4 @@
-# Open Bench
+# Quippe
 
 Connects student-run STEM clubs (high school clubs, college clubs, small undergraduate labs) with biotech companies for surplus lab supplies, lab tours, speakers, and meetups with employee resource groups.
 

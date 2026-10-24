@@ -1,4 +1,4 @@
-# Open Bench — Project Brief
+# Quippe — Project Brief
 
 > **Working name.** Rename freely.
 > **How to use:** open a new **Spec** session in Kiro, paste this whole file, and ask Kiro to generate requirements (EARS format), then design, then tasks. Review and edit each stage before moving on.
@@ -7,7 +7,7 @@
 
 ## 1. One-line pitch
 
-Grants fund schools. Nobody funds the student-run clubs. Open Bench is one front door between student-run STEM clubs and Massachusetts biotech companies: surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs, the employee-led affinity groups inside companies), all coordinated through one company liaison.
+Grants fund schools. Nobody funds the student-run clubs. Quippe is one front door between student-run STEM clubs and Massachusetts biotech companies: surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs, the employee-led affinity groups inside companies), all coordinated through one company liaison.
 
 ## 2. The problem
 

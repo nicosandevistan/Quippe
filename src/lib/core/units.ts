@@ -1,7 +1,7 @@
 import type { Unit } from "@/lib/schemas";
 
 /**
- * Pure unit conversion for Open Bench (Req 11.5, 11.6; CP7).
+ * Pure unit conversion for Quippe (Req 11.5, 11.6; CP7).
  *
  * This module lives in the deterministic core: no I/O, no randomness, no clock.
  * It imports only the `Unit` type from the schema layer.

@@ -1,8 +1,8 @@
-# Implementation Plan: Open Bench MVP
+# Implementation Plan: Quippe MVP
 
 ## Overview
 
-This plan builds Open Bench bottom-up along the enforced dependency boundaries from the design: schemas → core (pure) → data (repo + seed) → ai (provider/prompts/mock + wrapper) → api routes → pages/components. The deterministic core and its nine property tests are front-loaded because they carry every safety, eligibility, and matching guarantee; the AI layer is only a schema-validated translator with retry-then-fallback. All work is TypeScript (`strict: true`) with Vitest + fast-check, and every AI path is tested against the mock provider so no network or secret is needed.
+This plan builds Quippe bottom-up along the enforced dependency boundaries from the design: schemas → core (pure) → data (repo + seed) → ai (provider/prompts/mock + wrapper) → api routes → pages/components. The deterministic core and its nine property tests are front-loaded because they carry every safety, eligibility, and matching guarantee; the AI layer is only a schema-validated translator with retry-then-fallback. All work is TypeScript (`strict: true`) with Vitest + fast-check, and every AI path is tested against the mock provider so no network or secret is needed.
 
 Tasks marked with `*` are optional (tests and non-core-demo polish) and can be skipped for a faster MVP, but they encode the correctness guarantees and are strongly recommended.
 

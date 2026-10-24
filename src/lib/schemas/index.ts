@@ -21,7 +21,7 @@ import {
 } from "./enums";
 
 /**
- * Entity schemas for Open Bench — the shared schema entry point.
+ * Entity schemas for Quippe — the shared schema entry point.
  *
  * This module is the single source of truth for every domain shape. The same
  * zod schemas are imported by API routes (input validation), the AI layer

@@ -1,7 +1,7 @@
 import type { Offer } from "@/lib/schemas";
 
 /**
- * Pure capacity and allocation logic for Open Bench (Req 6.6, 6.7, 18.1, 18.2;
+ * Pure capacity and allocation logic for Quippe (Req 6.6, 6.7, 18.1, 18.2;
  * CP3, CP4).
  *
  * This module lives in the deterministic core: no I/O, no randomness, no clock.

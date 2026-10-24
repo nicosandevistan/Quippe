@@ -1,5 +1,5 @@
 /**
- * Referenced-ID scope validator for Open Bench (Req 3.3, 12.2, 19.6; CP9).
+ * Referenced-ID scope validator for Quippe (Req 3.3, 12.2, 19.6; CP9).
  *
  * This module lives in the deterministic core: no I/O, no randomness, no clock.
  * It imports nothing — it compares plain string IDs.

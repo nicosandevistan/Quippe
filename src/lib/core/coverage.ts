@@ -13,7 +13,7 @@ import { allocate } from "./capacity";
 import { convert } from "./units";
 
 /**
- * Deterministic coverage builder for Open Bench (Req 11.1–11.4, 11.6, 11.7,
+ * Deterministic coverage builder for Quippe (Req 11.1–11.4, 11.6, 11.7,
  * 12.5, 14.4, 15.8; CP1, CP5, CP8).
  *
  * This module is PURE per structure.md: no I/O, no randomness, no `Date.now()`.

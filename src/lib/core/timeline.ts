@@ -1,7 +1,7 @@
 import type { TimelineEvent } from "@/lib/schemas";
 
 /**
- * Pure timeline ordering for Open Bench (Req 2.4).
+ * Pure timeline ordering for Quippe (Req 2.4).
  *
  * This module lives in the deterministic core: no I/O, no randomness, no clock.
  * It imports only the `TimelineEvent` type from the schema layer.

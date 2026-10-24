@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Open Bench is a single coordination front door between student-run STEM organizations (high school clubs, college clubs, small undergraduate labs, community organizations) and Massachusetts biotech companies. Companies offer surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs). Each company is represented by one liaison who manages its offers and inventory.
+Quippe is a single coordination front door between student-run STEM organizations (high school clubs, college clubs, small undergraduate labs, community organizations) and Massachusetts biotech companies. Companies offer surplus lab supplies, lab tours, speakers, and meetups with employee resource groups (ERGs). Each company is represented by one liaison who manages its offers and inventory.
 
 This document specifies the Minimum Viable Product (MVP) scope only: features F1 through F9 from `PROJECT_BRIEF.md` section 5. Nice-to-have items (pooled pickup, Spanish UI toggle, calendar view, mocked email notifications) and out-of-scope items (real authentication and sign-up, payments, chat, real email, mobile app, tax receipts) are explicitly excluded.
 
@@ -17,7 +17,7 @@ Accessibility (WCAG AA) applies across all user-facing views.
 
 ## Glossary
 
-- **System**: The Open Bench application, comprising its user interface, API routes, deterministic core logic, AI provider layer, and in-memory data store.
+- **System**: The Quippe application, comprising its user interface, API routes, deterministic core logic, AI provider layer, and in-memory data store.
 - **Organization**: A student-run group with a type of `high_school_club`, `college_club`, `undergrad_lab`, or `community_org`. Has a name, school, city, size, mission statement, `under_resourced` flag, and (required for `high_school_club`) an advisor.
 - **Company**: A biotech company with a name, city, one liaison, ERGs, offers, and inventory.
 - **Erg**: An employee resource group belonging to a Company. Has a name, description, the topics and student communities it wants to meet, and a capacity per semester.

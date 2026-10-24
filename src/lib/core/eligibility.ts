@@ -1,5 +1,5 @@
 /**
- * Student personal-identity eligibility guard for Open Bench (Req 7.6, 7.7,
+ * Student personal-identity eligibility guard for Quippe (Req 7.6, 7.7,
  * 7.8, 17.4, 17.5).
  *
  * This module lives in the deterministic core: no I/O, no randomness, no clock.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Open Bench is a single coordination front door between student-run STEM organizations and Massachusetts biotech companies. This document is the technical design for the MVP (features F1–F9 from `PROJECT_BRIEF.md`), satisfying Requirements 1–19 in `requirements.md`.
+Quippe is a single coordination front door between student-run STEM organizations and Massachusetts biotech companies. This document is the technical design for the MVP (features F1–F9 from `PROJECT_BRIEF.md`), satisfying Requirements 1–19 in `requirements.md`.
 
 ### Architectural philosophy: AI translates, deterministic code decides
 

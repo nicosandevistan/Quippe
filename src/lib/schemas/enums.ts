@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Shared enums and branded ID types for Open Bench.
+ * Shared enums and branded ID types for Quippe.
  *
  * This is the leaf schema layer: `lib/core`, `lib/ai`, `lib/data`, and the
  * API routes all depend on these definitions and nothing depends back on them.

@@ -1,7 +1,7 @@
 import { keywordOverlap } from "./matching";
 
 /**
- * Deterministic ERG-event fit for Open Bench (Task 7.2; Req 7.5).
+ * Deterministic ERG-event fit for Quippe (Task 7.2; Req 7.5).
  *
  * This module lives in the PURE core per structure.md: no I/O, no randomness,
  * no `Date.now()`. It imports only the keyword-overlap primitive from its
