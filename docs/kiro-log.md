@@ -102,5 +102,21 @@ Add an entry whenever you use a Kiro feature. Take a screenshot when something i
 - **Kiro tool:** Crew
 - **Feature:** spec task execution / property-minded safety wiring
 - **What we did:** Task 25 — company page (dashboard of matched asks, offer create form, ERG-gated event posting, CSV inventory upload → review → confirm) and the advisor approval queue (approve/reject, org-ownership checked). Plus Task 25.3 accessibility tests.
-- **What happened (good or bad):** Two safety guarantees are wired through the UI even before the API routes exist: the company dashboard filters asks through the pure `visibleToCompany` so pending/rejected HS asks never show (Property 2), and inventory confirm sets `hsSafe` via `computeHsSafe` — the uploaded value is never trusted (Req 14.2). The review table labels the HS-safe column as rule-set, so the UI itself communicates "AI/human suggests, rules decide". Accessibility tests render components with `react-dom/server` (no new deps) and assert label↔control and error↔field wiring; needed `esbuild.jsx: "automatic"` in vitest config so `.tsx` tests compile without importing React. 25.3 scope note: login + advisor are owned here; composer/supplies (Task 24) are a teammate's, so those page-level checks fall to them — the shared components they reuse are covered. lint + 132 tests green.
+- **What happened (good or bad):** Two safety guarantees are wired through the UI even before the API routes exist: the company dashboard filters asks through the pure `visibleToCompany` so pending/rejected HS asks never show (Property 2), and inventory confirm sets `hsSafe` via `computeHsSafe` — the uploaded value is never trusted (Req 14.2). The review table labels the HS-safe column as rule-set, so the UI itself communicates "AI/human suggests, rules decide". Accessibility tests render components with `react-dom/server` (no new deps) and assert label↔control and error↔field wiring; needed `esbuild.jsx: "automatic"` in vitest config so `.tsx` tests compile without importing React. 25.3 scope note: login + advisor are owned here; composer/supplies (Task 24) are a teammate's, so those page-level checks fall to them — the shared components they reuse are covered. lint + tests green.
+- **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — AI module functions (bug caught by type-check)
+- **What we did:** Task 13 — `src/lib/ai/index.ts` wires the five AI functions (composeAsks, generateBom, writeProtocol, handoffSummary, normalizeInventory) through the wrapper with each one's output schema, typed fallback, and (for the id-scoped ones) the allowed-id set. Added 8 unit tests against the mock provider. Defined the `Protocol` schema locally in the AI layer (it is an AI-output shape, not a core domain entity, and the spec places no Protocol schema in `src/lib/schemas`).
+- **What happened (good or bad):** `tsc --noEmit` (part of `npm run lint`) caught a real type bug the unit tests passed straight through: `run()` typed its `schema` as `z.ZodType<T>`, which a zod schema containing BRANDED id types (ZodBranded, where input ≠ output) does not satisfy — so `run({ schema: BOM })` failed to compile. Fixed by widening the parameter to `z.ZodType<T, z.ZodTypeDef, unknown>`. A good example of the type-checker catching something the runtime tests could not. Also enforced Req 12.3 defensively: even a schema-valid protocol is rejected to the fallback if it omits any missing BOM line. lint + test green (132).
+- **Screenshot:**
+
+- **Time:** 2026-10-24 afternoon
+- **Who:** Garrett (via Kiro Crew)
+- **Kiro tool:** Crew
+- **Feature:** spec task execution — Task 14 checkpoint
+- **What we did:** Task 14 checkpoint — core + data + AI layers complete. Ran seed:check, lint, and the full test suite.
+- **What happened (good or bad):** All green: `seed:check` OK, `npm run lint` clean, `npm test` 132 passed across 17 files. The whole AI layer runs on the mock provider with no API key. No open questions at the checkpoint; next layer is the API routes (Task 15+).
 - **Screenshot:**
