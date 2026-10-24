@@ -21,7 +21,7 @@ export default async function NewAskPage() {
 
   if (!account || account.role !== "club_officer") {
     return (
-      <PageShell role={account?.role} navLinks={navLinksFor(account)}>
+      <PageShell role={account?.role} navLinks={navLinksFor(account)} orgName={account?.label}>
         <h1 className="text-2xl font-semibold">Create asks</h1>
         <p className="mt-4 text-gray-700">
           Only a club officer can create asks. Sign in as the officer to
@@ -38,7 +38,7 @@ export default async function NewAskPage() {
   }
 
   return (
-    <PageShell role={account.role} navLinks={navLinksFor(account)}>
+    <PageShell role={account.role} navLinks={navLinksFor(account)} orgName={account.label}>
       <h1 className="text-2xl font-semibold">Create asks</h1>
       <p className="mt-1 mb-6 text-gray-700">
         Tell us what your group needs, like supplies, a lab tour, a speaker, or

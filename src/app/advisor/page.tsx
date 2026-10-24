@@ -27,7 +27,7 @@ export default async function AdvisorPage() {
 
   if (res.status === 401 || res.status === 403) {
     return (
-      <PageShell role={account?.role} navLinks={nav}>
+      <PageShell role={account?.role} navLinks={nav} orgName={account?.label}>
         <h1 className="text-2xl font-semibold">Approval queue</h1>
         <div className="mt-4">
           <EmptyState
@@ -48,7 +48,7 @@ export default async function AdvisorPage() {
   }));
 
   return (
-    <PageShell role={account?.role} navLinks={nav}>
+    <PageShell role={account?.role} navLinks={nav} orgName={account?.label}>
       <h1 className="text-2xl font-semibold">Approval queue</h1>
       <p className="mt-1 text-gray-700">
         In-person requests from your club need your approval before any company

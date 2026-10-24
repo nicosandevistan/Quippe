@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quippe landing page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#2142C6;text-decoration:none}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid #2142C6;outline-offset:2px}
+.btn{display:inline-flex;align-items:center;font:inherit;font-size:15px;font-weight:600;height:44px;padding:0 18px;border-radius:6px;cursor:pointer;border:1px solid transparent;box-sizing:border-box}
+.btn:hover{text-decoration:none}
+.btn-p{background:#2142C6;color:#FFFFFF}.btn-p:hover{background:#1A35A0}
+.btn-s{background:#FFFFFF;color:#1B1E24;border-color:#D5D9E0}.btn-s:hover{background:#F5F6F8}
+.slip{background-color:#FFFFFF;background-image:linear-gradient(#E8ECFA 1px,transparent 1px),linear-gradient(90deg,#E8ECFA 1px,transparent 1px);background-size:22px 22px;background-position:-1px -1px}
+.row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #DCE2F4;font-size:15px}
+.row:last-child{border-bottom:0}
+.row .who{font-size:13px;color:#5C6370;white-space:nowrap}
+.chk path{stroke-dasharray:30;stroke-dashoffset:30;animation:draw .32s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){.chk path{animation:none;stroke-dashoffset:0}}
+.step h3{margin:6px 0 6px;font-size:18px;font-weight:600;letter-spacing:-0.01em}
+.step p{margin:0;color:#3D434E;font-size:15px;max-width:38ch}
+.mini{width:100%;border-collapse:collapse;font-size:13px}
+.mini td{padding:10px 12px;border-bottom:1px solid #EDEFF2}
+.mini tr:last-child td{border-bottom:0}
+</style>
+</helmet>
+<div style="background: #FFFFFF; color: #1B1E24; font-family: 'Schibsted Grotesk', system-ui, sans-serif; font-size: 16px; line-height: 1.55;">
+
+  <header style="border-bottom: 1px solid #E3E6EB;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px;">
+      <a href="#" style="font-weight: 800; font-size: 22px; letter-spacing: -0.02em; color: #1B1E24;">Quippe</a>
+      <nav aria-label="Main" style="display: flex; gap: 22px; font-size: 15px; flex-grow: 1;">
+        <a href="#clubs" style="color: #3D434E;">For clubs</a>
+        <a href="#companies" style="color: #3D434E;">For companies</a>
+        <a href="#how" style="color: #3D434E;">How it works</a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="#" style="font-weight: 600; color: #1B1E24;">Sign in</a>
+        <a href="#" class="btn btn-p" style="height: 38px; font-size: 14px;">Create a club account</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section style="max-width: 1160px; margin: 0 auto; padding: 72px 24px 80px; display: flex; flex-wrap: wrap; gap: 48px 56px; align-items: center;">
+      <div style="flex: 1 1 440px; min-width: 0;">
+        <h1 style="margin: 0; font-size: clamp(40px, 5.6vw, 66px); line-height: 1.02; font-weight: 800; letter-spacing: -0.035em; max-width: 12ch;">Your club's supply list, covered by biotech down the street.</h1>
+        <p style="margin: 24px 0 32px; font-size: 19px; line-height: 1.5; color: #3D434E; max-width: 34em;">Post what your next workshop needs. Biotech companies nearby see it, cover what they have in surplus, and open their labs for tours and talks. No more cold emails.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+          <a href="#" class="btn btn-p">Create a club account</a>
+          <a href="#" class="btn btn-s">I work at a biotech company</a>
+        </div>
+        <p style="margin: 18px 0 0; font-size: 14px; color: #5C6370;">Free for high school clubs, college clubs, and undergrad labs.</p>
+      </div>
+
+      <figure style="flex: 1 1 420px; min-width: 0; margin: 0;">
+        <div class="slip" style="border: 1px solid #CDD5EE; border-radius: 6px; padding: 22px 24px 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 2px solid #1B1E24;">
+            <div>
+              <div style="font-size: 19px; font-weight: 700; letter-spacing: -0.01em;">DNA extraction and gel workshop</div>
+              <div style="font-size: 13px; color: #5C6370;">Latinos in STEM Society, 25 students</div>
+            </div>
+            <div style="font-size: 13px; color: #5C6370; font-variant-numeric: tabular-nums;">Needed by Nov 14</div>
+          </div>
+          <div role="list">
+            <div class="row" role="listitem"><svg class="chk" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2142C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Covered"><path pathLength="30" style="animation-delay: .5s" d="M3.5 12.5c2 1.2 3.6 3.4 5.2 6.2C11.6 12.6 15.4 7.6 20.5 4"></path></svg><span>Microcentrifuge tubes, 50</span><span class="who">Harborview</span></div>
+            <div class="row" role="listitem"><svg class="chk" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2142C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Covered"><path pathLength="30" style="animation-delay: .8s" d="M3.5 13c2.2 1 3.8 3 5.2 5.6C11.8 12.2 15.6 7.8 20.8 4.6"></path></svg><span>Pipette tips, 2 racks</span><span class="who">Harborview</span></div>
+            <div class="row" role="listitem"><svg class="chk" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2142C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Covered"><path pathLength="30" style="animation-delay: 1.1s" d="M3.8 12.2c1.9 1.4 3.4 3.6 4.9 6.4C11.4 12.8 15.2 7.4 20.4 4.2"></path></svg><span>Agarose, 10 g</span><span class="who">Harborview</span></div>
+            <div class="row" role="listitem"><svg class="chk" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2142C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Covered"><path pathLength="30" style="animation-delay: 1.4s" d="M3.5 12.8c2.1 1.1 3.7 3.2 5.1 5.9C11.7 12.4 15.5 7.6 20.6 4.4"></path></svg><span>Gel box and power supply, on loan</span><span class="who">Tidepool</span></div>
+            <div class="row" role="listitem"><svg class="chk" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2142C6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Covered"><path pathLength="30" style="animation-delay: 1.7s" d="M3.6 12.4c2 1.3 3.5 3.5 5 6.2C11.5 12.6 15.3 7.5 20.5 4.3"></path></svg><span>DNA ladder and loading dye</span><span class="who">Tidepool</span></div>
+            <div class="row" role="listitem"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B9C2DD" stroke-width="2" aria-label="Still needed"><rect x="4.5" y="4.5" width="15" height="15" rx="2"></rect></svg><span>Isopropyl alcohol, 500 mL</span><span class="who" style="color: #8F5200;">Pharmacy</span></div>
+          </div>
+          <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #DCE2F4; font-size: 14px; color: #3D434E; font-variant-numeric: tabular-nums;">8 of 10 items covered by two companies within 5 miles.</div>
+        </div>
+        <figcaption style="margin-top: 10px; font-size: 13px; color: #5C6370;">A real ask from the demo: Quippe built the list from the club's protocol.</figcaption>
+      </figure>
+    </section>
+
+    <section id="how" aria-labelledby="how-h" style="background: #F5F6F8; border-top: 1px solid #E3E6EB; border-bottom: 1px solid #E3E6EB;">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 64px 24px;">
+        <h2 id="how-h" style="margin: 0 0 32px; font-size: 32px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em;">How it works</h2>
+        <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 32px 40px;">
+          <li class="step" style="flex: 1 1 260px; border-top: 2px solid #1B1E24; padding-top: 14px;">
+            <span style="font-size: 15px; font-weight: 700; color: #2142C6;">Step 1</span>
+            <h3>Post what you need</h3>
+            <p>Ask for supplies, a lab tour, or a speaker. Paste a protocol and Quippe works out the supply list and amounts for your group size.</p>
+          </li>
+          <li class="step" style="flex: 1 1 260px; border-top: 2px solid #1B1E24; padding-top: 14px;">
+            <span style="font-size: 15px; font-weight: 700; color: #2142C6;">Step 2</span>
+            <h3>Nearby companies say yes</h3>
+            <p>A liaison at each company sees the asks that fit their surplus and schedule, and accepts with one click. High school asks go to your advisor first.</p>
+          </li>
+          <li class="step" style="flex: 1 1 260px; border-top: 2px solid #1B1E24; padding-top: 14px;">
+            <span style="font-size: 15px; font-weight: 700; color: #2142C6;">Step 3</span>
+            <h3>Keep the relationship</h3>
+            <p>Every donation, tour, and talk goes on your club's timeline. When officers graduate, Quippe writes the handoff for next year's board.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section style="max-width: 1160px; margin: 0 auto; padding: 72px 24px; display: flex; flex-wrap: wrap; gap: 48px 64px;">
+      <div id="clubs" style="flex: 1 1 400px; min-width: 0;">
+        <h2 style="margin: 0 0 12px; font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em;">For clubs</h2>
+        <p style="margin: 0 0 18px; color: #3D434E; max-width: 46ch;">Built for groups that run on a small budget and a lot of emails: STEM clubs, affinity groups like SACNAS and SHPE chapters, and undergrad research labs.</p>
+        <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; color: #3D434E;">
+          <li>One place to ask every company near you, instead of cold emailing each one</li>
+          <li>Supply lists sized to your group, with grocery and pharmacy swaps for what's left</li>
+          <li>Introductions to employee groups that share your community</li>
+        </ul>
+        <a href="#" class="btn btn-p" style="margin-top: 24px;">Create a club account</a>
+      </div>
+
+      <div id="companies" style="flex: 1 1 400px; min-width: 0;">
+        <h2 style="margin: 0 0 12px; font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em;">For biotech companies</h2>
+        <p style="margin: 0 0 18px; color: #3D434E; max-width: 46ch;">Your liaison gets one inbox of student requests, ranked by how well they fit what you can give. Surplus goes to classrooms instead of the bin.</p>
+        <div style="border: 1px solid #E3E6EB; border-radius: 8px; overflow-x: auto;">
+          <table class="mini" aria-label="Example of a company's matched asks">
+            <tbody>
+              <tr><td style="font-weight: 600;">Supplies for a gel workshop</td><td style="color: #5C6370;">Latinos in STEM Society</td><td style="color: #2142C6; font-weight: 600; white-space: nowrap;">Strong fit</td></tr>
+              <tr><td style="font-weight: 600;">Lab tour for 15 members</td><td style="color: #5C6370;">Latinos in STEM Society</td><td style="color: #2142C6; font-weight: 600; white-space: nowrap;">Good fit</td></tr>
+              <tr><td style="font-weight: 600;">Careers in biotech talk</td><td style="color: #5C6370;">Northgate High Biology Club</td><td style="color: #5C6370; font-weight: 600; white-space: nowrap;">Fair fit</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <a href="#" class="btn btn-s" style="margin-top: 24px;">Set up your company</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="why" style="border-top: 1px solid #E3E6EB;">
+      <div style="max-width: 760px; margin: 0 auto; padding: 72px 24px;">
+        <h2 id="why" style="margin: 0 0 16px; font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em;">Why we built this</h2>
+        <p style="margin: 0 0 14px; font-size: 18px; line-height: 1.6; color: #3D434E;">We ran a STEM club for underrepresented students with almost no budget. Every workshop meant cold emailing companies for pipette tips and agarose, and hoping someone wrote back.</p>
+        <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #3D434E;">The companies we did reach wanted to help. They just had no easy way to find us. Quippe is that way.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer style="background: #1B1E24; color: #C9CED6;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px;">
+      <span><span style="font-weight: 800; color: #FFFFFF; margin-right: 10px;">Quippe</span>Made at Hackachusetts 2026</span>
+      <span style="display: flex; gap: 20px;"><a href="#" style="color: #C9CED6;">Sign in</a><a href="#" style="color: #C9CED6;">GitHub</a></span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

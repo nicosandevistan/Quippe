@@ -15,53 +15,45 @@ import {
 } from "@/components/HandoffSummaryView";
 import { navLinksFor } from "@/components/nav-links";
 import { rowsFromCsv } from "@/app/company/[id]/company-types";
-
 /**
  * Role navigation and the presentational pieces added to wire the demo flow
  * through the API (Task 26.1): plain-language text, real buttons and lists,
  * and a status region where results appear.
+ *
+ * Nav labels follow docs/design/*.html after the visual refresh (club officer:
+ * "Club page", "New ask", "Supply planner"; company: "Matched asks"). The
+ * "Switch demo account" link is no longer part of this list — the shell pins it
+ * to the bottom of the sidebar — so navLinksFor returns only the role's pages.
  */
-
 const hrefs = (links: { href: string }[]) => links.map((l) => l.href);
 const labels = (links: { label: string }[]) => links.map((l) => l.label);
-
 describe("navLinksFor", () => {
-  it("club officer: club, create asks, plan supplies, switch account", () => {
+  it("club officer: club page, new ask, supply planner", () => {
     const links = navLinksFor({ role: "club_officer", orgId: "org-liss" });
-    expect(labels(links)).toEqual([
-      "Our club",
-      "Create asks",
-      "Plan supplies",
-      "Switch account",
-    ]);
-    expect(hrefs(links)).toEqual(["/org/org-liss", "/asks/new", "/supplies", "/login"]);
+    expect(labels(links)).toEqual(["Club page", "New ask", "Supply planner"]);
+    expect(hrefs(links)).toEqual(["/org/org-liss", "/asks/new", "/supplies"]);
   });
-
-  it("club member: club and switch account only", () => {
+  it("club member: club page only", () => {
     const links = navLinksFor({ role: "club_member", orgId: "org-liss" });
-    expect(hrefs(links)).toEqual(["/org/org-liss", "/login"]);
-    expect(labels(links)).toEqual(["Our club", "Switch account"]);
+    expect(hrefs(links)).toEqual(["/org/org-liss"]);
+    expect(labels(links)).toEqual(["Club page"]);
   });
-
-  it("club advisor: approval queue, club supplies, switch account", () => {
+  it("club advisor: approval queue, supply planner", () => {
     const links = navLinksFor({ role: "club_advisor", orgId: "org-hsbio" });
-    expect(labels(links)).toEqual(["Approval queue", "Club supplies", "Switch account"]);
-    expect(hrefs(links)).toEqual(["/advisor", "/supplies", "/login"]);
+    expect(labels(links)).toEqual(["Approval queue", "Supply planner"]);
+    expect(hrefs(links)).toEqual(["/advisor", "/supplies"]);
   });
-
-  it("company liaison and ERG lead: company dashboard and switch account", () => {
+  it("company liaison and ERG lead: matched asks (company dashboard)", () => {
     for (const role of ["company_liaison", "erg_lead"] as const) {
       const links = navLinksFor({ role, companyId: "co-harborview" });
-      expect(labels(links)).toEqual(["Company dashboard", "Switch account"]);
-      expect(hrefs(links)).toEqual(["/company/co-harborview", "/login"]);
+      expect(labels(links)).toEqual(["Matched asks"]);
+      expect(hrefs(links)).toEqual(["/company/co-harborview"]);
     }
   });
-
   it("nobody signed in: no links", () => {
     expect(navLinksFor(null)).toEqual([]);
   });
 });
-
 const entry: DashboardEntry = {
   askId: "ask-1",
   orgId: "org-liss",
@@ -82,7 +74,6 @@ const entry: DashboardEntry = {
   },
   offer: { id: "off-1", type: "lab_tour", notes: "" },
 };
-
 describe("DashboardEntryView", () => {
   it("phrases scores in plain words with the number", () => {
     expect(scorePhrase(0.82)).toBe("Strong match (score 0.82)");
@@ -90,7 +81,6 @@ describe("DashboardEntryView", () => {
     expect(scorePhrase(0.4)).toMatch(/^Good match/);
     expect(scorePhrase(0.39)).toMatch(/^Possible match/);
   });
-
   it("shows the ask, reasons as a list, and Accept/Decline buttons for the liaison", () => {
     const html = renderToStaticMarkup(<DashboardEntryView entry={entry} canDecide />);
     expect(html).toContain("Latinos in STEM Society");
@@ -104,7 +94,6 @@ describe("DashboardEntryView", () => {
     expect(html).toMatch(/<button[^>]*type="button"[^>]*>Decline<\/button>/);
     expect(html).toContain('role="status"');
   });
-
   it("is read-only for the ERG lead and shows the status instead", () => {
     const html = renderToStaticMarkup(
       <DashboardEntryView entry={entry} canDecide={false} />,
@@ -112,7 +101,6 @@ describe("DashboardEntryView", () => {
     expect(html).not.toContain(">Accept<");
     expect(html).toContain("Status: Matched");
   });
-
   it("says when there are no reasons, and shows a decided ask's status", () => {
     const html = renderToStaticMarkup(
       <DashboardEntryView
@@ -126,7 +114,6 @@ describe("DashboardEntryView", () => {
     expect(html).toContain("Status: Accepted");
     expect(html).toMatch(/role="status"[^>]*>.*This ask is now accepted/);
   });
-
   it("shows the API's error text in the status region and keeps the buttons", () => {
     const html = renderToStaticMarkup(
       <DashboardEntryView
@@ -139,7 +126,6 @@ describe("DashboardEntryView", () => {
     expect(html).toContain(">Accept<");
   });
 });
-
 describe("AdvisorResultMessage", () => {
   it("uses plain language for each outcome", () => {
     expect(advisorResultText("approve", "open")).toBe("Approved. Companies can now see it.");
@@ -148,7 +134,6 @@ describe("AdvisorResultMessage", () => {
     );
     expect(advisorResultText("reject", "rejected")).toBe("Rejected. Companies won't see it.");
   });
-
   it("announces the result in a status region that is present before any result", () => {
     expect(renderToStaticMarkup(<AdvisorResultMessage result={null} />)).toContain(
       'role="status"',
@@ -159,7 +144,6 @@ describe("AdvisorResultMessage", () => {
     expect(html).toMatch(/role="status"[^>]*><p[^>]*>Approved\. Companies can now see it\. It already matches an offer\./);
   });
 });
-
 describe("HandoffSummaryView", () => {
   it("renders non-empty sections as lists inside a status region and skips empty ones", () => {
     const html = renderToStaticMarkup(
@@ -185,7 +169,6 @@ describe("HandoffSummaryView", () => {
     expect(html).not.toContain("Open asks");
     expect(html).toContain("What worked");
   });
-
   it("shows the plain fallback note for the API fallback", () => {
     const html = renderToStaticMarkup(<HandoffSummaryView result={{ kind: "fallback" }} />);
     expect(HANDOFF_FALLBACK_NOTE).toBe(
@@ -195,7 +178,6 @@ describe("HandoffSummaryView", () => {
     expect(html).toContain('role="status"');
   });
 });
-
 describe("rowsFromCsv (manual review table)", () => {
   it("skips the header and marks unknown units and hazards for review", () => {
     const rows = rowsFromCsv(

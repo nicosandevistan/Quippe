@@ -110,10 +110,14 @@ export function DashboardEntryView({
         {entry.ask.topic}
       </h3>
       <p className="mt-1 text-sm text-gray-700">From {entry.orgName}</p>
-      <p className="mt-1 text-sm text-gray-600">
-        Group of {entry.ask.groupSize} ·{" "}
-        {entry.ask.deliveryMode === "in_person" ? "In person" : "Virtual"} ·
-        Matches your {offerTypeLabel(entry.offer.type).toLowerCase()} offer
+      <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+        <span>Group of {entry.ask.groupSize}</span>
+        <span>
+          {entry.ask.deliveryMode === "in_person" ? "In person" : "Virtual"}
+        </span>
+        <span>
+          Matches your {offerTypeLabel(entry.offer.type).toLowerCase()} offer
+        </span>
       </p>
       <p className="mt-2 text-sm font-medium">{scorePhrase(entry.score)}</p>
 

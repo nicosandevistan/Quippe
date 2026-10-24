@@ -5,7 +5,9 @@
  * - Pure helpers and fetch wrappers in `src/app/supplies/supplies-api.ts`,
  *   exercised with a stub `fetch` (no network).
  * - Presentational views rendered to static HTML (`renderToStaticMarkup`, node
- *   environment, no new deps).
+ *   environment, no new deps). The views are styled to
+ *   docs/design/supplies.html; these tests check behaviour and accessibility,
+ *   not pixels.
  * - The additive `companyNames` field on `POST /api/supplies/coverage`, called
  *   through the real route handler against the genuine seed.
  */
@@ -35,12 +37,9 @@ import {
   CoverageTable,
   ProtocolView,
 } from "@/app/supplies/SuppliesViews";
-
 // --- Fixtures ------------------------------------------------------------
-
 type LineId = BOM["lines"][number]["id"];
 type CovLine = CoverageReport["lines"][number];
-
 const BOM_FIXTURE: BOM = {
   lines: [
     {
@@ -69,7 +68,6 @@ const BOM_FIXTURE: BOM = {
     },
   ],
 };
-
 const COVERAGE_FIXTURE: CoverageReport = {
   runDate: "2027-01-01",
   lines: [
@@ -98,9 +96,7 @@ const COVERAGE_FIXTURE: CoverageReport = {
     },
   ],
 };
-
 const NAMES = { "co-harborview": "Harborview Therapeutics" };
-
 const PROTOCOL_FIXTURE: Protocol = {
   title: "Gel electrophoresis with what is available",
   steps: ["Cast a 1% agarose gel.", "Run the gel in TBE buffer."],
@@ -109,7 +105,6 @@ const PROTOCOL_FIXTURE: Protocol = {
   hsReviewRequired: false,
   hsReviewText: "",
 };
-
 /** A stub fetch that records its calls and returns a fixed response. */
 function stubFetch(status: number, body: unknown) {
   const calls: { url: string; init: RequestInit }[] = [];
@@ -122,11 +117,9 @@ function stubFetch(status: number, body: unknown) {
   }) as typeof fetch;
   return { impl, calls };
 }
-
 const throwingFetch = (async () => {
   throw new TypeError("Failed to fetch");
 }) as typeof fetch;
-
 function expectJsonPost(
   call: { url: string; init: RequestInit },
   url: string,
@@ -140,9 +133,7 @@ function expectJsonPost(
   ).toBe("application/json");
   expect(JSON.parse(String(call.init.body))).toEqual(body);
 }
-
 // --- validateSuppliesInput (Req 10.2) ------------------------------------
-
 describe("validateSuppliesInput", () => {
   it("rejects an empty or over-length experiment with a range message", () => {
     expect(validateSuppliesInput("", "10").experiment).toMatch(/1 to 2000/);
@@ -150,7 +141,6 @@ describe("validateSuppliesInput", () => {
       /1 to 2000/,
     );
   });
-
   it("rejects group sizes outside 1–500 or not whole numbers", () => {
     for (const raw of ["0", "501", "2.5", "abc", ""]) {
       const errors = validateSuppliesInput("DNA extraction", raw);
@@ -158,16 +148,13 @@ describe("validateSuppliesInput", () => {
       expect(errors.experiment).toBeUndefined();
     }
   });
-
   it("returns no errors for valid input, including the bounds", () => {
     expect(validateSuppliesInput("DNA extraction", "12")).toEqual({});
     expect(validateSuppliesInput("x".repeat(2000), "1")).toEqual({});
     expect(validateSuppliesInput("x", "500")).toEqual({});
   });
 });
-
 // --- Fetch wrappers ------------------------------------------------------
-
 describe("requestBom", () => {
   it("posts experiment + groupSize and returns the BOM", async () => {
     const { impl, calls } = stubFetch(200, { ok: true, bom: BOM_FIXTURE });
@@ -178,7 +165,6 @@ describe("requestBom", () => {
     });
     expect(result).toEqual({ kind: "bom", bom: BOM_FIXTURE });
   });
-
   it("maps the bom_failed fallback", async () => {
     const { impl } = stubFetch(200, {
       ok: false,
@@ -189,7 +175,6 @@ describe("requestBom", () => {
       kind: "bom_failed",
     });
   });
-
   it("maps a 400 to per-field errors (joined server message lists)", async () => {
     const { impl } = stubFetch(400, {
       error: "Please correct the highlighted fields.",
@@ -207,7 +192,6 @@ describe("requestBom", () => {
       },
     });
   });
-
   it("returns a retry message when fetch throws, and the server error on 401", async () => {
     expect(await requestBom("Gel lab", 12, throwingFetch)).toEqual({
       kind: "error",
@@ -220,7 +204,6 @@ describe("requestBom", () => {
     });
   });
 });
-
 describe("requestCoverage", () => {
   it("posts the BOM and returns coverage + company names", async () => {
     const { impl, calls } = stubFetch(200, {
@@ -236,12 +219,10 @@ describe("requestCoverage", () => {
       companyNames: NAMES,
     });
   });
-
   it("defaults companyNames to {} and maps errors", async () => {
     const { impl } = stubFetch(200, { ok: true, coverage: COVERAGE_FIXTURE });
     const result = await requestCoverage(BOM_FIXTURE, impl);
     expect(result.kind === "coverage" && result.companyNames).toEqual({});
-
     expect(await requestCoverage(BOM_FIXTURE, throwingFetch)).toEqual({
       kind: "error",
       message: NETWORK_ERROR,
@@ -253,7 +234,6 @@ describe("requestCoverage", () => {
     });
   });
 });
-
 describe("requestProtocol", () => {
   it("posts the coverage report and returns the protocol", async () => {
     const { impl, calls } = stubFetch(200, {
@@ -266,7 +246,6 @@ describe("requestProtocol", () => {
     });
     expect(result).toEqual({ kind: "protocol", protocol: PROTOCOL_FIXTURE });
   });
-
   it("maps the protocol_rejected fallback and a thrown fetch", async () => {
     const { impl } = stubFetch(200, {
       ok: false,
@@ -283,9 +262,7 @@ describe("requestProtocol", () => {
     });
   });
 });
-
 // --- Display helpers (Req 11.2, 12.3) ------------------------------------
-
 describe("coverage display helpers", () => {
   it("summarizes counts by status", () => {
     const summary = summarizeCoverage(COVERAGE_FIXTURE);
@@ -294,13 +271,11 @@ describe("coverage display helpers", () => {
       "1 of 3 items covered, 1 partly covered, 1 missing.",
     );
   });
-
   it("labels each status in words", () => {
     expect(statusLabel("covered")).toBe("Covered");
     expect(statusLabel("partial")).toBe("Partly covered");
     expect(statusLabel("missing")).toBe("Missing");
   });
-
   it("joins BOM lines with coverage and supplier names", () => {
     const rows = coverageRows(BOM_FIXTURE, COVERAGE_FIXTURE, NAMES);
     expect(rows.map((r) => r.item)).toEqual([
@@ -326,7 +301,6 @@ describe("coverage display helpers", () => {
     });
     expect(NO_SUPPLIER).toBe("No company has this");
   });
-
   it("lists missing items by name from the protocol and the report", () => {
     expect(
       missingItemNames(BOM_FIXTURE, COVERAGE_FIXTURE, PROTOCOL_FIXTURE),
@@ -337,9 +311,7 @@ describe("coverage display helpers", () => {
     ]);
   });
 });
-
 // --- Static render of the views ------------------------------------------
-
 describe("supplies views", () => {
   it("renders an accessible coverage table with status text", () => {
     const html = renderToStaticMarkup(
@@ -348,21 +320,20 @@ describe("supplies views", () => {
       />,
     );
     expect(html).toContain("<caption");
-    for (const header of ["Item", "Needed", "Status", "From"]) {
+    // Three columns, matching docs/design/supplies.html.
+    for (const header of ["Item", "Amount", "Covered by"]) {
       expect(html).toContain(`scope="col"`);
       expect(html).toContain(`>${header}</th>`);
     }
-    expect(html.match(/scope="col"/g)?.length).toBe(4);
-    expect(html).toContain("Covered");
-    expect(html).toContain("Partly covered");
-    expect(html).toContain("Missing");
-    expect(html).toContain("No company has this");
-    expect(html).toContain("Harborview Therapeutics");
-    // The status icon is decorative; the label carries the meaning.
-    expect(html).toContain('aria-hidden="true"');
+    expect(html.match(/scope="col"/g)?.length).toBe(3);
+    // Status is carried in text in the "Covered by" column, never colour
+    // alone: a supplier name for covered/partial, "Still needed" for missing.
+    expect(html).toContain("Harborview");
+    expect(html).toContain("Partly covered, 5 L available");
+    expect(html).toContain("Still needed");
+    expect(html).toContain(NO_SUPPLIER);
   });
-
-  it("renders the protocol steps and the still-missing list", () => {
+  it("renders the protocol steps and the still-needed list", () => {
     const html = renderToStaticMarkup(
       <ProtocolView
         protocol={PROTOCOL_FIXTURE}
@@ -372,11 +343,10 @@ describe("supplies views", () => {
     expect(html).toContain(PROTOCOL_FIXTURE.title);
     expect(html).toContain("<ol");
     expect(html).toContain("Cast a 1% agarose gel.");
-    expect(html).toContain("Still missing");
+    expect(html).toContain("Still needed");
     expect(html).toContain("unobtainium widget");
     expect(html).not.toContain('role="note"');
   });
-
   it("renders the server's HS review text verbatim when required", () => {
     const html = renderToStaticMarkup(
       <ProtocolView
@@ -390,18 +360,15 @@ describe("supplies views", () => {
     );
     expect(html).toContain('role="note"');
     expect(html).toContain("Advisor must review before running");
-    expect(html).not.toContain("Still missing");
+    expect(html).not.toContain("Still needed");
   });
-
   it("uses plain language for the BOM fallback", () => {
     expect(BOM_FAILED_MESSAGE).toBe(
       "We couldn't draft a supply list for that experiment. Try describing it differently.",
     );
   });
 });
-
 // --- Coverage route: companyNames (additive) ------------------------------
-
 describe("POST /api/supplies/coverage companyNames", () => {
   it("maps each supplying company id to its display name", async () => {
     const req = new NextRequest("http://test/api/supplies/coverage", {
@@ -416,13 +383,11 @@ describe("POST /api/supplies/coverage companyNames", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.ok).toBe(true);
-
     const coverage: CoverageReport = body.coverage;
     const covered = coverage.lines.find((l) => l.bomLineId === "bom-cov");
     expect(covered?.status).toBe("covered");
     expect(covered?.supplyingCompanyId).toBe("co-harborview");
     expect(body.companyNames["co-harborview"]).toBe("Harborview Therapeutics");
-
     // Only companies that appear in the report are named.
     const supplierIds = new Set(
       coverage.lines.map((l) => l.supplyingCompanyId).filter(Boolean),

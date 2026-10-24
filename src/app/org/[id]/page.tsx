@@ -1,18 +1,22 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { GET as getOrgRoute } from "@/app/api/org/[id]/route";
 import { Acronym, resetAcronyms } from "@/components/Acronym";
 import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
-import { TimelineList } from "@/components/TimelineList";
+import { TimelineLegend, TimelineList } from "@/components/TimelineList";
 import { navLinksFor } from "@/components/nav-links";
 import type { Organization, TimelineEvent } from "@/lib/schemas";
 import { callApi } from "../../_lib/call-api";
 import { getCurrentAccount } from "../../session";
 import { generateHandoffAction } from "./actions";
 import { HandoffButton } from "./HandoffButton";
-
 /**
  * Organization page (Task 23.2, rewired in Task 26.1; Req 2.1–2.6, 3.1).
+ * Visual refresh to match docs/design/club.html (see .kiro/steering/design.md):
+ * a header with the org name, a one-line description, and a primary "New ask"
+ * action, then a two-column body — the timeline (with a date column and status
+ * dots) beside a handoff panel that stacks below on narrow screens.
  *
  * Reads the org and its timeline from `GET /api/org/[id]`, which checks that
  * the viewer belongs to this org and returns the timeline already sorted
@@ -21,13 +25,11 @@ import { HandoffButton } from "./HandoffButton";
  * read-only notice (Req 2.3). Only this org's officer gets the handoff
  * section (Req 3.1).
  */
-
 interface OrgBody {
   organization: Organization;
   timeline: TimelineEvent[];
   emptyTimeline: boolean;
 }
-
 export default async function OrgPage({
   params,
 }: {
@@ -36,7 +38,6 @@ export default async function OrgPage({
   resetAcronyms();
   const account = await getCurrentAccount();
   const nav = navLinksFor(account);
-
   const res = await callApi<OrgBody>(getOrgRoute, {
     path: `/api/org/${encodeURIComponent(params.id)}`,
     params: { id: params.id },
@@ -45,8 +46,10 @@ export default async function OrgPage({
   if (res.status === 404) notFound();
   if (res.status === 403 || !res.ok || res.json === null) {
     return (
-      <PageShell role={account?.role} navLinks={nav}>
-        <h1 className="text-2xl font-semibold">Club page</h1>
+      <PageShell role={account?.role} navLinks={nav} orgName={account?.label}>
+        <h1 className="text-[26px] font-bold leading-tight tracking-[-0.015em]">
+          Club page
+        </h1>
         <div className="mt-4">
           <EmptyState
             title="This page belongs to a different organization."
@@ -56,66 +59,84 @@ export default async function OrgPage({
       </PageShell>
     );
   }
-
   const { organization: org, timeline } = res.json;
   const isMember = account?.role === "club_member";
   const canGenerateHandoff =
     account?.role === "club_officer" && account.orgId === org.id;
-
   return (
-    <PageShell role={account?.role} navLinks={nav}>
-      <h1 className="text-2xl font-semibold">{org.name}</h1>
-      <p className="mt-1 text-gray-700">
-        {org.school} · {org.city}
-      </p>
-
-      <dl className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2">
+    <PageShell role={account?.role} navLinks={nav} orgName={account?.label}>
+      {/* Header: name + one-line description, with the primary action on the
+          right. The description is built from the org's own fields (type,
+          school, city, size, mission) — no invented copy. */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <dt className="text-sm font-medium text-gray-600">Type</dt>
-          <dd>{readableType(org.type)}</dd>
+          <h1 className="m-0 text-[26px] font-bold leading-tight tracking-[-0.015em]">
+            {org.name}
+          </h1>
+          <p className="mt-1 max-w-[64ch] text-muted">
+            {readableType(org.type)} at {org.school} in {org.city},{" "}
+            {org.size} members. {org.mission}
+          </p>
         </div>
-        <div>
-          <dt className="text-sm font-medium text-gray-600">Members</dt>
-          <dd>{org.size}</dd>
-        </div>
-        <div className="sm:col-span-2">
-          <dt className="text-sm font-medium text-gray-600">Mission</dt>
-          <dd>{org.mission}</dd>
-        </div>
-      </dl>
-
+        {!isMember ? (
+          <Link
+            href="/asks/new"
+            className="inline-flex h-[34px] items-center rounded-control bg-pen px-3.5 text-sm font-semibold text-white hover:bg-pen-hover focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pen"
+          >
+            New ask
+          </Link>
+        ) : null}
+      </div>
       {isMember ? (
-        <p className="mt-4 rounded bg-gray-100 px-3 py-2 text-sm text-gray-700">
+        <p className="rounded-control bg-bench px-3 py-2 text-sm text-muted">
           You are viewing this page as a member. It is read-only.
         </p>
       ) : null}
-
-      <h2 className="mt-8 text-xl font-semibold">Timeline</h2>
-      <p className="mt-1 text-sm text-gray-600">
-        Recent asks, matches, visits, and donations, newest first.
-      </p>
-      <div className="mt-3">
-        <TimelineList events={timeline} />
+      {/* Two-column body: timeline on the left, handoff panel on the right.
+          flex-wrap stacks the panel below the timeline on narrow screens. */}
+      <div className="flex flex-wrap items-start gap-6">
+        <section
+          aria-labelledby="timeline-heading"
+          className="min-w-0 flex-[999_1_540px]"
+        >
+          <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2">
+            <h2
+              id="timeline-heading"
+              className="m-0 text-[17px] font-semibold"
+            >
+              Timeline
+            </h2>
+            <TimelineLegend />
+          </div>
+          <TimelineList events={timeline} />
+        </section>
+        {canGenerateHandoff ? (
+          <section
+            aria-labelledby="handoff-heading"
+            className="min-w-0 flex-[1_1_300px] rounded-panel border border-line bg-white p-[18px]"
+          >
+            <h2
+              id="handoff-heading"
+              className="m-0 text-[17px] font-semibold"
+            >
+              Handoff for next year&apos;s officers
+            </h2>
+            <p className="mb-3.5 mt-1.5 text-sm text-graphite">
+              Quippe writes a{" "}
+              <Acronym
+                term="handoff summary"
+                expansion="a recap for the next officers"
+              />{" "}
+              of who you&apos;ve worked with and what&apos;s still open, so the
+              next board doesn&apos;t start from zero.
+            </p>
+            <HandoffButton orgId={org.id} generate={generateHandoffAction} />
+          </section>
+        ) : null}
       </div>
-
-      {canGenerateHandoff ? (
-        <>
-          <h2 className="mt-8 text-xl font-semibold">End-of-year handoff</h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Make a short{" "}
-            <Acronym
-              term="handoff summary"
-              expansion="a recap for the next officers"
-            />{" "}
-            from this club&apos;s timeline.
-          </p>
-          <HandoffButton orgId={org.id} generate={generateHandoffAction} />
-        </>
-      ) : null}
     </PageShell>
   );
 }
-
 function readableType(type: string): string {
   switch (type) {
     case "high_school_club":

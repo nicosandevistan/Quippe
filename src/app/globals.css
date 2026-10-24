@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Landing page checkmark draw-on animation (docs/design/landing.html).
+ * Each check's <path> has pathLength=30; it starts fully "undrawn"
+ * (stroke-dashoffset: 30) and animates to 0. Per-check delays are set inline.
+ * Disabled under prefers-reduced-motion so the marks render complete at once.
+ */
+.chk path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: quippe-draw 0.32s ease-out forwards;
+}
+
+@keyframes quippe-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chk path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/*
+ * Blueprint grid background for the sample ask card (docs/design/landing.html
+ * ".slip"). Kept as a utility class because Tailwind can't express the layered
+ * gradient + offset background-position cleanly.
+ */
+.slip {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(#e8ecfa 1px, transparent 1px),
+    linear-gradient(90deg, #e8ecfa 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+}
